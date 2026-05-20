@@ -928,20 +928,24 @@
         // ── 各時段 ──
         document.getElementById("hourlyChart").innerHTML = buildHourlyChart(orders);
 
-        // ── 類別銷售 ──
+        // ── 類別銷售（固定菜單順序）──
+        const CATEGORIES = [
+          "初麵包（含蛋）", "初餅", "手工花生（含蛋）",
+          "初點甜", "初點心", "初好茶"
+        ];
         const catMap = {};
+        CATEGORIES.forEach(c => { catMap[c] = { count: 0, revenue: 0 }; });
         orders.forEach(o => (o.items || []).forEach(item => {
-          const cat = item.category || "其他";
+          const cat = CATEGORIES.includes(item.category) ? item.category : "其他";
           if (!catMap[cat]) catMap[cat] = { count: 0, revenue: 0 };
           catMap[cat].count   += item.quantity;
           catMap[cat].revenue += item.lineTotal;
         }));
-        const catTotal  = Object.values(catMap).reduce((s, v) => s + v.revenue, 0);
-        const catSorted = Object.entries(catMap).sort((a, b) => b[1].revenue - a[1].revenue);
+        const catTotal = Object.values(catMap).reduce((s, v) => s + v.revenue, 0);
         document.getElementById("categoryStats").innerHTML =
-          catSorted.length > 0
-            ? catSorted.map(([cat, d]) => statRowHTML(cat, d.count + "份", d.revenue, catTotal)).join("")
-            : noData();
+          Object.entries(catMap)
+            .map(([cat, d]) => statRowHTML(cat, d.count + "份", d.revenue, catTotal))
+            .join("");
 
         // ── 品項排行 ──
         const itemMap = {};
