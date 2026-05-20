@@ -79,10 +79,6 @@ button, input, textarea { font: inherit; }
   line-height: 1.5;
 }
 
-@media (max-width: 400px) {
-  .brand-info { display: none; }
-}
-
 .header-right {
   display: flex;
   align-items: center;
