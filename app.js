@@ -353,9 +353,11 @@ function populateTimeSlots() {
   const select = document.getElementById("scheduledTime");
   if (!select) return;
   const slots = generateTimeSlots();
-  select.innerHTML =
-    '<option value="">立即取餐</option>' +
-    slots.map((t) => `<option value="${t}">${t}</option>`).join("");
+  if (slots.length === 0) {
+    select.innerHTML = '<option value="">今日已無可預約時段</option>';
+  } else {
+    select.innerHTML = slots.map((t) => `<option value="${t}">${t}</option>`).join("");
+  }
 }
 
 function openDrawer() {
@@ -401,6 +403,7 @@ async function checkout() {
     const ph   = document.querySelector("#customerPhone").value.trim();
     if (!name) { showToast("請填寫姓名"); return; }
     if (!ph)   { showToast("請填寫電話"); return; }
+    if (!scheduled) { showToast("請選擇取餐時間"); return; }
     customer = name;
     phone    = ph;
   }
