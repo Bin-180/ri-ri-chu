@@ -14,7 +14,7 @@
 .hidden { display: none !important; }
 
 body {
-  font-family: "Klee One", "Noto Sans TC", "PingFang TC", sans-serif;
+  font-family: "Klee One", "Noto Serif TC", "PingFang TC", sans-serif;
   background: var(--board);
   color: var(--chalk);
   line-height: 1.55;
