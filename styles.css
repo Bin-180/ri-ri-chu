@@ -72,6 +72,17 @@ button, input, textarea { font: inherit; }
   letter-spacing: 0.06em;
 }
 
+.brand-info {
+  font-size: 0.58rem;
+  color: var(--chalk-2);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+}
+
+@media (max-width: 400px) {
+  .brand-info { display: none; }
+}
+
 .header-right {
   display: flex;
   align-items: center;
