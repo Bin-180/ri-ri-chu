@@ -356,7 +356,9 @@ function populateTimeSlots() {
   if (slots.length === 0) {
     select.innerHTML = '<option value="">今日已無可預約時段</option>';
   } else {
-    select.innerHTML = slots.map((t) => `<option value="${t}">${t}</option>`).join("");
+    select.innerHTML =
+      '<option value="" disabled selected>請選擇取餐時間</option>' +
+      slots.map((t) => `<option value="${t}">${t}</option>`).join("");
   }
 }
 
