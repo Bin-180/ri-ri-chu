@@ -193,9 +193,15 @@ function menuItemHTML(item) {
   `;
 }
 
+const CATEGORY_HINTS = {
+  "初點甜": "吐司",
+};
+
 function sectionHeadingHTML(cat, items) {
   const variants = items[0]?.variants;
-  const hint = variants ? variants.map((v) => v.label).join("・") : null;
+  const hint = variants
+    ? variants.map((v) => v.label).join("・")
+    : (CATEGORY_HINTS[cat] || null);
   return `
     <div class="section-header">
       <h3 class="section-heading">${cat}</h3>
