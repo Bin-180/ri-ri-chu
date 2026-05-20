@@ -333,7 +333,7 @@ function renderCart() {
 
 function generateTimeSlots() {
   const now     = new Date();
-  const minTime = new Date(now.getTime() + 15 * 60 * 1000);
+  const minTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 6, 0); // 測試模式：開放全時段
   const y = now.getFullYear(), mo = now.getMonth(), d = now.getDate();
   let   t   = new Date(y, mo, d, 6, 0);
   const end = new Date(y, mo, d, 13, 30);
