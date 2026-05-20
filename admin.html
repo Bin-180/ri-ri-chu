@@ -584,6 +584,32 @@
         color: #1a2535;
       }
 
+      .period-toggle {
+        display: flex;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 6px;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+
+      .period-btn {
+        border: none;
+        border-right: 1.5px solid #e0e0e0;
+        background: transparent;
+        padding: 7px 16px;
+        font-size: 0.88rem;
+        color: #888;
+        transition: all 0.12s;
+      }
+
+      .period-btn:last-child { border-right: none; }
+
+      .period-btn.active {
+        background: #1a2535;
+        color: #fff;
+        font-weight: 600;
+      }
+
       @media (max-width: 600px) {
         .analytics-row { grid-template-columns: 1fr; }
         .stat-label { max-width: 70px; }
@@ -649,6 +675,10 @@
       <!-- 歷史 tab -->
       <div id="historyTab" class="tab-content hidden">
         <div class="history-controls">
+          <div class="period-toggle">
+            <button class="period-btn active" data-period="day" type="button">日</button>
+            <button class="period-btn" data-period="month" type="button">月</button>
+          </div>
           <input type="date" id="historyDate" />
           <button id="loadHistoryBtn">載入</button>
         </div>
@@ -686,7 +716,7 @@
 
           <!-- 各時段訂單量 -->
           <div class="analytics-panel">
-            <p class="analytics-title">各時段訂單量</p>
+            <p class="analytics-title" id="chartTitle">各時段訂單量</p>
             <div id="hourlyChart" class="hourly-chart-wrap"></div>
           </div>
 
@@ -777,7 +807,8 @@
       }
 
       // ── Live orders ──
-      let unsubscribe = null;
+      let unsubscribe   = null;
+      let currentPeriod = "day";
 
       function startListening() {
         if (unsubscribe) unsubscribe();
@@ -808,6 +839,13 @@
         badge.textContent = docs.length;
         badge.classList.remove("hidden");
         container.innerHTML = docs.map((doc) => orderCardHTML(doc.id, doc.data())).join("");
+      }
+
+      function formatDate(ts) {
+        if (!ts) return "--";
+        return new Date(ts.toMillis()).toLocaleDateString("zh-TW", {
+          month: "numeric", day: "numeric"
+        });
       }
 
       function formatTime(ts) {
@@ -870,14 +908,34 @@
 
       // ── History ──
       function setDefaultDate() {
-        const t = new Date();
+        const t    = new Date();
         const yyyy = t.getFullYear();
         const mm   = String(t.getMonth() + 1).padStart(2, "0");
         const dd   = String(t.getDate()).padStart(2, "0");
-        document.getElementById("historyDate").value = `${yyyy}-${mm}-${dd}`;
+        const input = document.getElementById("historyDate");
+        if (currentPeriod === "month") {
+          input.type  = "month";
+          input.value = `${yyyy}-${mm}`;
+        } else {
+          input.type  = "date";
+          input.value = `${yyyy}-${mm}-${dd}`;
+        }
       }
 
       document.getElementById("loadHistoryBtn").addEventListener("click", loadHistory);
+
+      document.querySelectorAll(".period-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          currentPeriod = btn.dataset.period;
+          document.querySelectorAll(".period-btn").forEach(b =>
+            b.classList.toggle("active", b === btn)
+          );
+          setDefaultDate();
+          document.getElementById("historyAnalytics").classList.add("hidden");
+          document.getElementById("historyListLabel").classList.add("hidden");
+          document.getElementById("historyList").innerHTML = "";
+        });
+      });
 
       async function loadHistory() {
         const dateStr = document.getElementById("historyDate").value;
@@ -887,9 +945,17 @@
         btn.disabled = true;
         btn.textContent = "載入中…";
 
-        const [y, m, d] = dateStr.split("-").map(Number);
-        const start = new Date(y, m - 1, d, 0, 0, 0);
-        const end   = new Date(y, m - 1, d, 23, 59, 59);
+        const parts = dateStr.split("-").map(Number);
+        let start, end;
+        if (currentPeriod === "month") {
+          const [y, m] = parts;
+          start = new Date(y, m - 1, 1, 0, 0, 0);
+          end   = new Date(y, m, 0, 23, 59, 59);
+        } else {
+          const [y, m, d] = parts;
+          start = new Date(y, m - 1, d, 0, 0, 0);
+          end   = new Date(y, m - 1, d, 23, 59, 59);
+        }
 
         try {
           const snap = await db.collection("orders")
@@ -902,7 +968,7 @@
             .map((doc) => ({ id: doc.id, ...doc.data() }))
             .filter((o) => o.status === "done");
 
-          renderHistory(orders);
+          renderHistory(orders, dateStr);
         } catch (err) {
           console.error(err);
           alert("載入失敗：" + err.message);
@@ -912,7 +978,8 @@
         }
       }
 
-      function renderHistory(orders) {
+      function renderHistory(orders, dateStr) {
+        const isMonth = currentPeriod === "month";
         document.getElementById("historyAnalytics").classList.remove("hidden");
         document.getElementById("historyListLabel").classList.remove("hidden");
 
@@ -932,7 +999,7 @@
         }).join("");
         const paymentTotal = `
           <div class="payment-total-row">
-            <span>今日營業額</span>
+            <span>${isMonth ? "本月營業額" : "今日營業額"}</span>
             <strong>$${total}</strong>
           </div>`;
         document.getElementById("paymentStats").innerHTML = (paymentRows || noData()) + paymentTotal;
@@ -946,8 +1013,11 @@
             return statRowHTML(label, filtered.length + "筆", rev, total);
           }).join("") || noData();
 
-        // ── 各時段 ──
-        document.getElementById("hourlyChart").innerHTML = buildHourlyChart(orders);
+        // ── 圖表（日→時段 / 月→每日）──
+        document.getElementById("chartTitle").textContent = isMonth ? "各日訂單量" : "各時段訂單量";
+        document.getElementById("hourlyChart").innerHTML  = isMonth
+          ? buildDailyChart(orders, dateStr)
+          : buildHourlyChart(orders);
 
         // ── 類別銷售（固定菜單順序）──
         const CATEGORIES = [
@@ -991,7 +1061,7 @@
         // ── 訂單明細 ──
         const list = document.getElementById("historyList");
         if (orders.length === 0) {
-          list.innerHTML = '<div class="empty-state">此日期無已完成訂單</div>';
+          list.innerHTML = '<div class="empty-state">此期間無已完成訂單</div>';
           return;
         }
         list.innerHTML = orders.map(o => `
@@ -1000,7 +1070,7 @@
             <span class="h-customer">${o.customer}</span>
             <span class="h-meta">${o.service} ・ ${o.payment}</span>
             <span class="h-total">$${o.total}</span>
-            <span class="h-time">${formatTime(o.createdAt)}</span>
+            <span class="h-time">${isMonth ? formatDate(o.createdAt) : formatTime(o.createdAt)}</span>
           </div>`).join("");
       }
 
@@ -1012,6 +1082,29 @@
             <div class="stat-bar-wrap"><div class="stat-bar" style="width:${pct}%"></div></div>
             <span class="stat-value">$${revenue} · ${countText}</span>
           </div>`;
+      }
+
+      function buildDailyChart(orders, dateStr) {
+        const BAR_MAX = 76;
+        const [y, m]  = dateStr.split("-").map(Number);
+        const days    = new Date(y, m, 0).getDate();
+        const counts  = {};
+        for (let d = 1; d <= days; d++) counts[d] = 0;
+        orders.forEach(o => {
+          if (!o.createdAt) return;
+          const d = new Date(o.createdAt.toMillis()).getDate();
+          if (d in counts) counts[d]++;
+        });
+        const max = Math.max(...Object.values(counts), 1);
+        return Object.entries(counts).map(([d, count]) => {
+          const barH = count > 0 ? Math.max(Math.round(count / max * BAR_MAX), 4) : 0;
+          return `
+            <div class="chart-col">
+              <span class="chart-count">${count || ""}</span>
+              <div class="chart-bar" style="height:${barH}px"></div>
+              <span class="chart-label">${d}</span>
+            </div>`;
+        }).join("");
       }
 
       function buildHourlyChart(orders) {
