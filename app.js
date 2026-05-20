@@ -468,22 +468,12 @@ function updateCustomerFields() {
   document.getElementById("takeoutFields").classList.toggle("hidden", isDineIn);
 }
 
-document.querySelectorAll(".service-option").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    state.service = btn.dataset.service;
-    setActiveButton(".service-option", "service", state.service);
-    setActiveButton(".drawer-service-btn", "service", state.service);
-    updateCustomerFields();
-    renderCart();
-  });
-});
 
 
 document.querySelectorAll(".drawer-service-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     state.service = btn.dataset.service;
     setActiveButton(".drawer-service-btn", "service", state.service);
-    setActiveButton(".service-option", "service", state.service);
     updateCustomerFields();
   });
 });
