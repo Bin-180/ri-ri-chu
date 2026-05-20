@@ -1073,14 +1073,24 @@
       }
 
       function buildHourlyChart(orders) {
-        const BAR_MAX = 76; // px
-        const counts  = {};
-        for (let h = 6; h <= 13; h++) counts[h] = 0;
+        const BAR_MAX = 76;
+
+        // 先統計實際出現的小時
+        const raw = {};
         orders.forEach(o => {
           if (!o.createdAt) return;
           const h = new Date(o.createdAt.toMillis()).getHours();
-          if (h in counts) counts[h]++;
+          raw[h] = (raw[h] || 0) + 1;
         });
+
+        // 顯示範圍：至少涵蓋 6–13，若有資料落在範圍外則自動延伸
+        const dataHours = Object.keys(raw).map(Number);
+        const minH = dataHours.length > 0 ? Math.min(...dataHours, 6)  : 6;
+        const maxH = dataHours.length > 0 ? Math.max(...dataHours, 13) : 13;
+
+        const counts = {};
+        for (let h = minH; h <= maxH; h++) counts[h] = raw[h] || 0;
+
         const max = Math.max(...Object.values(counts), 1);
         return Object.entries(counts).map(([h, count]) => {
           const barH = count > 0 ? Math.max(Math.round(count / max * BAR_MAX), 4) : 0;
