@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>日日初後台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: "Klee One", "Noto Sans TC", "PingFang TC", sans-serif;
+        background: #f2f4f7;
+        color: #1a1a1a;
+        min-height: 100vh;
+      }
+
+      button { cursor: pointer; font: inherit; }
+      input, textarea { font: inherit; }
+      .hidden { display: none !important; }
+
+      /* ── Login ── */
+      .login-screen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .login-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 40px 36px;
+        width: min(400px, 100%);
+        box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      }
+
+      .login-logo {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+        margin: 0 auto 16px;
+        border: 2px solid #e8e8e8;
+      }
+
+      .login-card h1 {
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .login-card > p {
+        text-align: center;
+        color: #888;
+        font-size: 0.85rem;
+        margin-bottom: 24px;
+      }
+
+      .login-error {
+        color: #c0392b;
+        font-size: 0.83rem;
+        min-height: 20px;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .login-card label {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 14px;
+        font-size: 0.82rem;
+        color: #555;
+      }
+
+      .login-card input {
+        padding: 10px 14px;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.12s;
+      }
+
+      .login-card input:focus { border-color: #1a2535; }
+
+      #loginBtn {
+        width: 100%;
+        padding: 12px;
+        background: #1a2535;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.98rem;
+        font-weight: 600;
+        margin-top: 6px;
+        transition: opacity 0.15s;
+      }
+
+      #loginBtn:disabled { opacity: 0.6; }
+
+      /* ── Admin layout ── */
+      .admin-header {
+        background: #1a2535;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .admin-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .admin-logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1.5px solid rgba(255,255,255,0.4);
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      #adminEmail {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.6);
+      }
+
+      #logoutBtn {
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.25);
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+      }
+
+      /* ── Tabs ── */
+      .tab-bar {
+        background: #fff;
+        border-bottom: 1px solid #e8e8e8;
+        display: flex;
+        padding: 0 16px;
+        gap: 4px;
+      }
+
+      .tab-btn {
+        padding: 12px 18px;
+        border: none;
+        background: transparent;
+        font-size: 0.9rem;
+        color: #888;
+        border-bottom: 2.5px solid transparent;
+        margin-bottom: -1px;
+        transition: all 0.12s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .tab-btn.active {
+        color: #1a2535;
+        border-bottom-color: #1a2535;
+        font-weight: 600;
+      }
+
+      .badge {
+        background: #e53935;
+        color: #fff;
+        border-radius: 10px;
+        padding: 1px 7px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 1.6;
+      }
+
+      /* ── Tab content ── */
+      .tab-content {
+        padding: 16px;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: #aaa;
+        padding: 60px 20px;
+        font-size: 0.95rem;
+      }
+
+      /* ── Order cards ── */
+      .orders-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+        gap: 14px;
+      }
+
+      .order-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        overflow: hidden;
+        border-top: 3px solid #1a2535;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px 6px;
+      }
+
+      .order-num {
+        font-weight: 700;
+        color: #1a2535;
+        font-size: 0.95rem;
+      }
+
+      .order-customer {
+        flex: 1;
+        font-size: 0.92rem;
+      }
+
+      .order-time {
+        color: #aaa;
+        font-size: 0.8rem;
+      }
+
+      .card-meta {
+        padding: 0 16px 8px;
+        font-size: 0.78rem;
+        color: #888;
+      }
+
+      .card-items {
+        border-top: 1px solid #f2f2f2;
+        border-bottom: 1px solid #f2f2f2;
+        padding: 6px 16px;
+      }
+
+      .order-item {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+        font-size: 0.88rem;
+        gap: 6px;
+      }
+
+      .order-item-name { flex: 1; }
+
+      .order-item-qty {
+        color: #888;
+        font-size: 0.8rem;
+      }
+
+      .order-item-price {
+        font-weight: 600;
+        min-width: 40px;
+        text-align: right;
+      }
+
+      .card-phone {
+        padding: 4px 16px 8px;
+        font-size: 0.82rem;
+        color: #555;
+      }
+
+      .card-note {
+        padding: 8px 16px;
+        background: #fffde7;
+        font-size: 0.8rem;
+        color: #795800;
+        border-bottom: 1px solid #f2f2f2;
+      }
+
+      .card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+      }
+
+      .card-total {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+
+      .done-btn {
+        background: #2e7d32;
+        color: #fff;
+        border: none;
+        padding: 8px 18px;
+        border-radius: 6px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        transition: opacity 0.12s;
+      }
+
+      .done-btn:disabled { opacity: 0.5; }
+
+      /* ── History ── */
+      .history-controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .history-controls input[type="date"] {
+        padding: 8px 12px;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        outline: none;
+      }
+
+      .history-controls input[type="date"]:focus { border-color: #1a2535; }
+
+      #loadHistoryBtn {
+        padding: 8px 20px;
+        background: #1a2535;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: opacity 0.12s;
+      }
+
+      #loadHistoryBtn:disabled { opacity: 0.6; }
+
+      .history-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .summary-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 14px 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      }
+
+      .summary-label {
+        display: block;
+        font-size: 0.72rem;
+        color: #888;
+        margin-bottom: 4px;
+      }
+
+      .summary-card strong {
+        font-size: 1.25rem;
+        color: #1a2535;
+        font-weight: 700;
+      }
+
+      .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .history-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.88rem;
+      }
+
+      .h-num { font-weight: 700; color: #1a2535; min-width: 72px; }
+      .h-customer { flex: 1; }
+      .h-meta { color: #888; font-size: 0.78rem; min-width: 80px; }
+      .h-total { font-weight: 700; min-width: 50px; text-align: right; }
+      .h-time { color: #aaa; font-size: 0.78rem; min-width: 44px; text-align: right; }
+
+      /* ── Analytics ── */
+      #historyAnalytics {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .analytics-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .analytics-panel {
+        background: #fff;
+        border-radius: 8px;
+        padding: 14px 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      }
+
+      .analytics-title {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #aaa;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+
+      /* Stat bar rows */
+      .stat-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 9px;
+        font-size: 0.82rem;
+      }
+
+      .stat-row:last-child { margin-bottom: 0; }
+
+      .stat-label {
+        flex-shrink: 0;
+        min-width: 62px;
+        color: #444;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 90px;
+      }
+
+      .stat-bar-wrap {
+        flex: 1;
+        height: 7px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .stat-bar {
+        height: 100%;
+        background: #1a2535;
+        border-radius: 4px;
+        transition: width 0.35s ease;
+      }
+
+      .stat-value {
+        flex-shrink: 0;
+        min-width: 86px;
+        text-align: right;
+        color: #888;
+        font-size: 0.72rem;
+      }
+
+      /* Hourly chart */
+      .hourly-chart-wrap {
+        display: flex;
+        align-items: stretch;
+        gap: 4px;
+        height: 120px;
+      }
+
+      .chart-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 2px;
+      }
+
+      .chart-bar {
+        width: 75%;
+        min-width: 4px;
+        background: #1a2535;
+        border-radius: 2px 2px 0 0;
+      }
+
+      .chart-count {
+        font-size: 0.58rem;
+        color: #555;
+        min-height: 12px;
+        line-height: 12px;
+      }
+
+      .chart-label {
+        font-size: 0.58rem;
+        color: #aaa;
+        line-height: 14px;
+      }
+
+      /* Item ranking */
+      .rank-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 0.8rem;
+      }
+
+      .rank-item:last-child { margin-bottom: 0; }
+
+      .rank-name {
+        flex: 0 0 auto;
+        width: 110px;
+        color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .rank-bar-wrap {
+        flex: 1;
+        height: 7px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .rank-bar {
+        height: 100%;
+        background: #3a6ea5;
+        border-radius: 4px;
+        transition: width 0.35s ease;
+      }
+
+      .rank-count {
+        flex-shrink: 0;
+        min-width: 28px;
+        text-align: right;
+        font-weight: 600;
+        color: #555;
+        font-size: 0.78rem;
+      }
+
+      .analytics-section-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #555;
+        margin: 4px 0 10px;
+        letter-spacing: 0.02em;
+      }
+
+      .no-data {
+        color: #ccc;
+        font-size: 0.82rem;
+        text-align: center;
+        padding: 10px 0;
+      }
+
+      @media (max-width: 600px) {
+        .analytics-row { grid-template-columns: 1fr; }
+        .stat-label { max-width: 70px; }
+        .rank-name { width: 80px; }
+      }
+
+      @media (max-width: 480px) {
+        .tab-btn { padding: 10px 12px; font-size: 0.85rem; }
+        .tab-content { padding: 12px; }
+        .history-card { flex-wrap: wrap; }
+        .h-meta { order: 5; width: 100%; }
+        #adminEmail { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── Login screen ── -->
+    <div id="loginScreen" class="login-screen">
+      <div class="login-card">
+        <img src="logo.jpg" class="login-logo" alt="日日初" />
+        <h1>日日初後台</h1>
+        <p>請輸入員工帳號登入</p>
+        <div id="loginError" class="login-error"></div>
+        <label>電子信箱
+          <input id="loginEmail" type="email" autocomplete="email" placeholder="staff@example.com" />
+        </label>
+        <label>密碼
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••" />
+        </label>
+        <button id="loginBtn">登入</button>
+      </div>
+    </div>
+
+    <!-- ── Admin screen ── -->
+    <div id="adminScreen" class="hidden">
+
+      <header class="admin-header">
+        <div class="admin-brand">
+          <img src="logo.jpg" class="admin-logo" alt="" />
+          日日初後台
+        </div>
+        <div class="header-right">
+          <span id="adminEmail"></span>
+          <button id="logoutBtn">登出</button>
+        </div>
+      </header>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="live">
+          收單 <span id="pendingBadge" class="badge hidden">0</span>
+        </button>
+        <button class="tab-btn" data-tab="history">歷史</button>
+      </div>
+
+      <!-- 收單 tab -->
+      <div id="liveTab" class="tab-content">
+        <div id="liveOrders" class="orders-grid">
+          <div class="empty-state">目前無待處理訂單</div>
+        </div>
+      </div>
+
+      <!-- 歷史 tab -->
+      <div id="historyTab" class="tab-content hidden">
+        <div class="history-controls">
+          <input type="date" id="historyDate" />
+          <button id="loadHistoryBtn">載入</button>
+        </div>
+
+        <!-- 數據分析 -->
+        <div id="historyAnalytics" class="hidden">
+
+          <!-- 概覽卡 -->
+          <div class="history-summary">
+            <div class="summary-card">
+              <span class="summary-label">訂單數</span>
+              <strong id="orderCount">0</strong>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">總營業額</span>
+              <strong id="revenue">$0</strong>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">平均客單價</span>
+              <strong id="avgOrder">$0</strong>
+            </div>
+          </div>
+
+          <!-- 付款方式 + 內用外帶 -->
+          <div class="analytics-row">
+            <div class="analytics-panel">
+              <p class="analytics-title">付款方式</p>
+              <div id="paymentStats"></div>
+            </div>
+            <div class="analytics-panel">
+              <p class="analytics-title">內用 / 外帶</p>
+              <div id="serviceStats"></div>
+            </div>
+          </div>
+
+          <!-- 各時段訂單量 -->
+          <div class="analytics-panel">
+            <p class="analytics-title">各時段訂單量</p>
+            <div id="hourlyChart" class="hourly-chart-wrap"></div>
+          </div>
+
+          <!-- 類別銷售 + 品項排行 -->
+          <div class="analytics-row">
+            <div class="analytics-panel">
+              <p class="analytics-title">類別銷售</p>
+              <div id="categoryStats"></div>
+            </div>
+            <div class="analytics-panel">
+              <p class="analytics-title">品項銷售排行 TOP 15</p>
+              <div id="itemRanking"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 訂單明細 -->
+        <p class="analytics-section-label hidden" id="historyListLabel">訂單明細</p>
+        <div id="historyList" class="history-list"></div>
+      </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+      // ── Tab switching ──
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          document.querySelectorAll(".tab-content").forEach((c) => c.classList.add("hidden"));
+          document.getElementById(btn.dataset.tab + "Tab").classList.remove("hidden");
+        });
+      });
+
+      // ── Auth ──
+      auth.onAuthStateChanged((user) => {
+        if (user) showAdmin(user);
+        else showLogin();
+      });
+
+      document.getElementById("loginBtn").addEventListener("click", async () => {
+        const email    = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        const errorEl  = document.getElementById("loginError");
+        const btn      = document.getElementById("loginBtn");
+
+        errorEl.textContent = "";
+        btn.disabled = true;
+        btn.textContent = "登入中…";
+
+        try {
+          await auth.signInWithEmailAndPassword(email, password);
+        } catch (err) {
+          const msgs = {
+            "auth/invalid-email":      "電子信箱格式錯誤",
+            "auth/user-not-found":     "帳號不存在",
+            "auth/wrong-password":     "密碼錯誤",
+            "auth/invalid-credential": "帳號或密碼錯誤",
+            "auth/too-many-requests":  "嘗試次數過多，請稍後再試",
+          };
+          errorEl.textContent = msgs[err.code] || "登入失敗，請重試";
+          btn.disabled = false;
+          btn.textContent = "登入";
+        }
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        if (unsubscribe) unsubscribe();
+        auth.signOut();
+      });
+
+      function showLogin() {
+        document.getElementById("loginScreen").classList.remove("hidden");
+        document.getElementById("adminScreen").classList.add("hidden");
+      }
+
+      function showAdmin(user) {
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("adminScreen").classList.remove("hidden");
+        document.getElementById("adminEmail").textContent = user.email;
+        startListening();
+        setDefaultDate();
+      }
+
+      // ── Live orders ──
+      let unsubscribe = null;
+
+      function startListening() {
+        if (unsubscribe) unsubscribe();
+        unsubscribe = db.collection("orders")
+          .where("status", "==", "pending")
+          .onSnapshot((snapshot) => {
+            const docs = snapshot.docs.slice().sort((a, b) => {
+              const at = a.data().createdAt?.toMillis() || 0;
+              const bt = b.data().createdAt?.toMillis() || 0;
+              return at - bt;
+            });
+            renderLiveOrders(docs);
+          }, (err) => {
+            console.error("Firestore 錯誤：", err);
+          });
+      }
+
+      function renderLiveOrders(docs) {
+        const container = document.getElementById("liveOrders");
+        const badge     = document.getElementById("pendingBadge");
+
+        if (docs.length === 0) {
+          container.innerHTML = '<div class="empty-state">✓ 目前無待處理訂單</div>';
+          badge.classList.add("hidden");
+          return;
+        }
+
+        badge.textContent = docs.length;
+        badge.classList.remove("hidden");
+        container.innerHTML = docs.map((doc) => orderCardHTML(doc.id, doc.data())).join("");
+      }
+
+      function formatTime(ts) {
+        if (!ts) return "--:--";
+        return new Date(ts.toMillis()).toLocaleTimeString("zh-TW", {
+          hour: "2-digit", minute: "2-digit"
+        });
+      }
+
+      function orderCardHTML(id, o) {
+        const itemsHTML = (o.items || []).map((item) => `
+          <div class="order-item">
+            <span class="order-item-name">${item.name}</span>
+            <span class="order-item-qty">× ${item.quantity}</span>
+            <span class="order-item-price">$${item.lineTotal}</span>
+          </div>
+        `).join("");
+
+        const phoneHTML = o.phone
+          ? `<div class="card-phone">📞 ${o.phone}</div>`
+          : "";
+
+        const noteHTML = (o.note && o.note !== "無")
+          ? `<div class="card-note">📝 ${o.note}</div>`
+          : "";
+
+        return `
+          <div class="order-card" id="card-${id}">
+            <div class="card-header">
+              <span class="order-num">#${o.orderNumber}</span>
+              <span class="order-customer">${o.customer}</span>
+              <span class="order-time">${formatTime(o.createdAt)}</span>
+            </div>
+            <div class="card-meta">${o.service} ・ ${o.payment}</div>
+            ${phoneHTML}
+            <div class="card-items">${itemsHTML}</div>
+            ${noteHTML}
+            <div class="card-footer">
+              <span class="card-total">$${o.total}</span>
+              <button class="done-btn" onclick="markDone('${id}')">✓ 完成出餐</button>
+            </div>
+          </div>
+        `;
+      }
+
+      async function markDone(id) {
+        const btn = document.querySelector(`#card-${id} .done-btn`);
+        if (btn) { btn.disabled = true; btn.textContent = "處理中…"; }
+        try {
+          await db.collection("orders").doc(id).update({
+            status: "done",
+            doneAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+        } catch (err) {
+          console.error(err);
+          alert("操作失敗，請重試");
+          if (btn) { btn.disabled = false; btn.textContent = "✓ 完成出餐"; }
+        }
+      }
+
+      // ── History ──
+      function setDefaultDate() {
+        const t = new Date();
+        const yyyy = t.getFullYear();
+        const mm   = String(t.getMonth() + 1).padStart(2, "0");
+        const dd   = String(t.getDate()).padStart(2, "0");
+        document.getElementById("historyDate").value = `${yyyy}-${mm}-${dd}`;
+      }
+
+      document.getElementById("loadHistoryBtn").addEventListener("click", loadHistory);
+
+      async function loadHistory() {
+        const dateStr = document.getElementById("historyDate").value;
+        if (!dateStr) return;
+
+        const btn = document.getElementById("loadHistoryBtn");
+        btn.disabled = true;
+        btn.textContent = "載入中…";
+
+        const [y, m, d] = dateStr.split("-").map(Number);
+        const start = new Date(y, m - 1, d, 0, 0, 0);
+        const end   = new Date(y, m - 1, d, 23, 59, 59);
+
+        try {
+          const snap = await db.collection("orders")
+            .where("createdAt", ">=", firebase.firestore.Timestamp.fromDate(start))
+            .where("createdAt", "<=", firebase.firestore.Timestamp.fromDate(end))
+            .orderBy("createdAt", "desc")
+            .get();
+
+          const orders = snap.docs
+            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .filter((o) => o.status === "done");
+
+          renderHistory(orders);
+        } catch (err) {
+          console.error(err);
+          alert("載入失敗：" + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "載入";
+        }
+      }
+
+      function renderHistory(orders) {
+        document.getElementById("historyAnalytics").classList.remove("hidden");
+        document.getElementById("historyListLabel").classList.remove("hidden");
+
+        // ── 概覽 ──
+        const total = orders.reduce((s, o) => s + (o.total || 0), 0);
+        const avg   = orders.length > 0 ? Math.round(total / orders.length) : 0;
+        document.getElementById("orderCount").textContent = orders.length + " 筆";
+        document.getElementById("revenue").textContent    = "$" + total;
+        document.getElementById("avgOrder").textContent   = "$" + avg;
+
+        // ── 付款方式 ──
+        const payments = ["現金", "Line Pay"];
+        document.getElementById("paymentStats").innerHTML =
+          payments.map(label => {
+            const filtered = orders.filter(o => o.payment === label);
+            const rev = filtered.reduce((s, o) => s + o.total, 0);
+            return statRowHTML(label, filtered.length + "筆", rev, total);
+          }).join("") || noData();
+
+        // ── 內用/外帶 ──
+        const services = ["內用", "外帶"];
+        document.getElementById("serviceStats").innerHTML =
+          services.map(label => {
+            const filtered = orders.filter(o => o.service === label);
+            const rev = filtered.reduce((s, o) => s + o.total, 0);
+            return statRowHTML(label, filtered.length + "筆", rev, total);
+          }).join("") || noData();
+
+        // ── 各時段 ──
+        document.getElementById("hourlyChart").innerHTML = buildHourlyChart(orders);
+
+        // ── 類別銷售 ──
+        const catMap = {};
+        orders.forEach(o => (o.items || []).forEach(item => {
+          const cat = item.category || "其他";
+          if (!catMap[cat]) catMap[cat] = { count: 0, revenue: 0 };
+          catMap[cat].count   += item.quantity;
+          catMap[cat].revenue += item.lineTotal;
+        }));
+        const catTotal  = Object.values(catMap).reduce((s, v) => s + v.revenue, 0);
+        const catSorted = Object.entries(catMap).sort((a, b) => b[1].revenue - a[1].revenue);
+        document.getElementById("categoryStats").innerHTML =
+          catSorted.length > 0
+            ? catSorted.map(([cat, d]) => statRowHTML(cat, d.count + "份", d.revenue, catTotal)).join("")
+            : noData();
+
+        // ── 品項排行 ──
+        const itemMap = {};
+        orders.forEach(o => (o.items || []).forEach(item => {
+          itemMap[item.name] = (itemMap[item.name] || 0) + item.quantity;
+        }));
+        const itemSorted = Object.entries(itemMap).sort((a, b) => b[1] - a[1]).slice(0, 15);
+        const itemMax    = itemSorted[0]?.[1] || 1;
+        document.getElementById("itemRanking").innerHTML =
+          itemSorted.length > 0
+            ? itemSorted.map(([name, qty]) => `
+                <div class="rank-item">
+                  <span class="rank-name">${name}</span>
+                  <div class="rank-bar-wrap">
+                    <div class="rank-bar" style="width:${Math.round(qty / itemMax * 100)}%"></div>
+                  </div>
+                  <span class="rank-count">${qty}</span>
+                </div>`).join("")
+            : noData();
+
+        // ── 訂單明細 ──
+        const list = document.getElementById("historyList");
+        if (orders.length === 0) {
+          list.innerHTML = '<div class="empty-state">此日期無已完成訂單</div>';
+          return;
+        }
+        list.innerHTML = orders.map(o => `
+          <div class="history-card">
+            <span class="h-num">#${o.orderNumber}</span>
+            <span class="h-customer">${o.customer}</span>
+            <span class="h-meta">${o.service} ・ ${o.payment}</span>
+            <span class="h-total">$${o.total}</span>
+            <span class="h-time">${formatTime(o.createdAt)}</span>
+          </div>`).join("");
+      }
+
+      function statRowHTML(label, countText, revenue, total) {
+        const pct = total > 0 ? Math.round(revenue / total * 100) : 0;
+        return `
+          <div class="stat-row">
+            <span class="stat-label">${label}</span>
+            <div class="stat-bar-wrap"><div class="stat-bar" style="width:${pct}%"></div></div>
+            <span class="stat-value">$${revenue} · ${countText}</span>
+          </div>`;
+      }
+
+      function buildHourlyChart(orders) {
+        const BAR_MAX = 76; // px
+        const counts  = {};
+        for (let h = 6; h <= 13; h++) counts[h] = 0;
+        orders.forEach(o => {
+          if (!o.createdAt) return;
+          const h = new Date(o.createdAt.toMillis()).getHours();
+          if (h in counts) counts[h]++;
+        });
+        const max = Math.max(...Object.values(counts), 1);
+        return Object.entries(counts).map(([h, count]) => {
+          const barH = count > 0 ? Math.max(Math.round(count / max * BAR_MAX), 4) : 0;
+          return `
+            <div class="chart-col">
+              <span class="chart-count">${count || ""}</span>
+              <div class="chart-bar" style="height:${barH}px"></div>
+              <span class="chart-label">${h}時</span>
+            </div>`;
+        }).join("");
+      }
+
+      function noData() {
+        return '<div class="no-data">無資料</div>';
+      }
+    </script>
+  </body>
+</html>

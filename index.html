@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>日日初 早餐點餐</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="sticky-header">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="logo.jpg" alt="日日初早午餐" />
+          <div class="brand-text">
+            <h1>日日初</h1>
+            <p>早餐・早午餐</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <span class="hours">06:00 – 13:30</span>
+          <div class="service-toggle" role="radiogroup" aria-label="用餐方式">
+            <button class="service-option active" data-service="內用" type="button">內用</button>
+            <button class="service-option" data-service="外帶" type="button">外帶</button>
+          </div>
+        </div>
+      </header>
+
+      <nav class="category-bar" aria-label="菜單分類">
+        <div class="category-tabs"></div>
+      </nav>
+    </div>
+
+    <main class="menu-main">
+      <div class="menu-list" id="menuList"></div>
+    </main>
+
+    <div class="cart-bar" id="cartBar">
+      <button class="cart-bar-btn" id="cartToggle" type="button" aria-label="查看訂單">
+        <span class="cart-badge" id="cartCount">0</span>
+        <span class="cart-bar-label">查看訂單</span>
+        <span class="cart-bar-total" id="cartBarTotal">$0</span>
+      </button>
+    </div>
+
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <aside class="cart-drawer" id="cartDrawer" aria-label="訂單明細">
+      <div class="drawer-handle"></div>
+
+      <div class="drawer-header">
+        <div>
+          <p class="drawer-label">ORDER</p>
+          <h2>訂單明細</h2>
+        </div>
+        <button class="drawer-close" id="drawerClose" type="button" aria-label="關閉">✕</button>
+      </div>
+
+      <div class="drawer-service-toggle">
+        <button class="drawer-service-btn active" data-service="內用" type="button">內用</button>
+        <button class="drawer-service-btn" data-service="外帶" type="button">外帶</button>
+      </div>
+
+      <div class="drawer-meta">
+        <div id="dineInFields">
+          <label>
+            <span>桌號 <em class="req">*</em></span>
+            <input id="tableNumber" type="text" placeholder="例：A3、靠窗2號" />
+          </label>
+        </div>
+        <div id="takeoutFields" class="hidden">
+          <label>
+            <span>姓名 <em class="req">*</em></span>
+            <input id="customerName" type="text" placeholder="例：王小姐" />
+          </label>
+          <label>
+            <span>電話 <em class="req">*</em></span>
+            <input id="customerPhone" type="tel" placeholder="例：0912345678" />
+          </label>
+        </div>
+        <label>
+          <span>備註</span>
+          <textarea id="orderNote" rows="2" placeholder="例：少醬、餐點一起出"></textarea>
+        </label>
+      </div>
+
+      <div class="cart-list" id="cartList">
+        <div class="empty-cart">
+          <strong>尚未選擇餐點</strong>
+          <span>從菜單加入品項。</span>
+        </div>
+      </div>
+
+      <div class="totals">
+        <div class="grand-total"><span>應收金額</span><strong id="grandTotal">$0</strong></div>
+      </div>
+
+      <div class="payment-row">
+        <button class="payment-option active" data-payment="現金" type="button">現金</button>
+        <button class="payment-option" data-payment="Line Pay" type="button">Line Pay</button>
+      </div>
+
+      <button class="checkout-button" id="checkout" type="button">送出訂單</button>
+    </aside>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <!-- 規格選擇器 -->
+    <div class="variant-overlay" id="variantOverlay"></div>
+    <div class="variant-picker" id="variantPicker" role="dialog" aria-modal="true">
+      <div class="drawer-handle"></div>
+      <p class="variant-item-name" id="variantItemName"></p>
+      <div class="variant-options" id="variantOptions"></div>
+      <button class="variant-cancel" id="variantCancel" type="button">取消</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
