@@ -331,7 +331,35 @@ function renderCart() {
   updateCartBar();
 }
 
+function generateTimeSlots() {
+  const now     = new Date();
+  const minTime = new Date(now.getTime() + 30 * 60 * 1000);
+  const y = now.getFullYear(), mo = now.getMonth(), d = now.getDate();
+  let   t   = new Date(y, mo, d, 6, 0);
+  const end = new Date(y, mo, d, 13, 30);
+  const slots = [];
+  while (t <= end) {
+    if (t >= minTime) {
+      const hh = String(t.getHours()).padStart(2, "0");
+      const mm = String(t.getMinutes()).padStart(2, "0");
+      slots.push(`${hh}:${mm}`);
+    }
+    t = new Date(t.getTime() + 15 * 60 * 1000);
+  }
+  return slots;
+}
+
+function populateTimeSlots() {
+  const select = document.getElementById("scheduledTime");
+  if (!select) return;
+  const slots = generateTimeSlots();
+  select.innerHTML =
+    '<option value="">立即取餐</option>' +
+    slots.map((t) => `<option value="${t}">${t}</option>`).join("");
+}
+
 function openDrawer() {
+  populateTimeSlots();
   cartDrawerEl.classList.add("open");
   cartOverlayEl.classList.add("visible");
   document.body.style.overflow = "hidden";
@@ -377,7 +405,8 @@ async function checkout() {
     phone    = ph;
   }
 
-  const note   = document.querySelector("#orderNote").value.trim() || "無";
+  const note      = document.querySelector("#orderNote").value.trim() || "無";
+  const scheduled = document.querySelector("#scheduledTime")?.value || "";
   const totals = calculateTotals();
   const orderNumber = String(Date.now()).slice(-6);
 
@@ -403,16 +432,19 @@ async function checkout() {
       status: "pending",
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
-    if (phone) orderData.phone = phone;
+    if (phone)     orderData.phone          = phone;
+    if (scheduled) orderData.scheduledTime  = scheduled;
 
     await db.collection("orders").add(orderData);
 
     showToast(`訂單 #${orderNumber} 已送出，應收 ${formatPrice(totals.total)}`);
     state.cart.clear();
-    document.querySelector("#tableNumber").value   = "";
+    document.querySelector("#tableNumber").value    = "";
     document.querySelector("#customerName").value  = "";
     document.querySelector("#customerPhone").value = "";
     document.querySelector("#orderNote").value     = "";
+    const st = document.querySelector("#scheduledTime");
+    if (st) st.value = "";
     renderCart();
     closeDrawer();
   } catch (err) {

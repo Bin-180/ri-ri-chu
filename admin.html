@@ -283,6 +283,16 @@
         color: #555;
       }
 
+      .card-scheduled {
+        padding: 7px 16px;
+        background: #fff3e0;
+        border-bottom: 1px solid #ffe0b2;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #c84b00;
+        letter-spacing: 0.02em;
+      }
+
       .card-note {
         padding: 8px 16px;
         background: #fffde7;
@@ -842,6 +852,10 @@
           </div>
         `).join("");
 
+        const scheduledHTML = o.scheduledTime
+          ? `<div class="card-scheduled">⏰ 預約取餐 ${o.scheduledTime}</div>`
+          : "";
+
         const phoneHTML = o.phone
           ? `<div class="card-phone">📞 ${o.phone}</div>`
           : "";
@@ -858,6 +872,7 @@
               <span class="order-time">${formatTime(o.createdAt)}</span>
             </div>
             <div class="card-meta">${o.service} ・ ${o.payment}</div>
+            ${scheduledHTML}
             ${phoneHTML}
             <div class="card-items">${itemsHTML}</div>
             ${noteHTML}
