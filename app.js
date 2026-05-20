@@ -478,6 +478,7 @@ document.querySelectorAll(".service-option").forEach((btn) => {
   });
 });
 
+
 document.querySelectorAll(".drawer-service-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     state.service = btn.dataset.service;
@@ -487,12 +488,6 @@ document.querySelectorAll(".drawer-service-btn").forEach((btn) => {
   });
 });
 
-document.querySelectorAll(".payment-option").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    state.payment = btn.dataset.payment;
-    setActiveButton(".payment-option", "payment", state.payment);
-  });
-});
 
 document.querySelector("#cartToggle").addEventListener("click", openDrawer);
 document.querySelector("#drawerClose").addEventListener("click", closeDrawer);

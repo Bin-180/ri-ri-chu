@@ -568,22 +568,6 @@
         padding: 10px 0;
       }
 
-      .payment-total-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid #f0f0f0;
-        margin-top: 10px;
-        padding-top: 10px;
-        font-size: 0.88rem;
-        color: #444;
-      }
-
-      .payment-total-row strong {
-        font-size: 1.1rem;
-        color: #1a2535;
-      }
-
       .period-toggle {
         display: flex;
         border: 1.5px solid #e0e0e0;
@@ -693,7 +677,7 @@
               <strong id="orderCount">0</strong>
             </div>
             <div class="summary-card">
-              <span class="summary-label">總營業額</span>
+              <span class="summary-label" id="revenueLabel">今日營業額</span>
               <strong id="revenue">$0</strong>
             </div>
             <div class="summary-card">
@@ -702,16 +686,10 @@
             </div>
           </div>
 
-          <!-- 付款方式 + 內用外帶 -->
-          <div class="analytics-row">
-            <div class="analytics-panel">
-              <p class="analytics-title">付款方式</p>
-              <div id="paymentStats"></div>
-            </div>
-            <div class="analytics-panel">
-              <p class="analytics-title">內用 / 外帶</p>
-              <div id="serviceStats"></div>
-            </div>
+          <!-- 內用/外帶 -->
+          <div class="analytics-panel">
+            <p class="analytics-title">內用 / 外帶</p>
+            <div id="serviceStats"></div>
           </div>
 
           <!-- 各時段訂單量 -->
@@ -986,23 +964,10 @@
         // ── 概覽 ──
         const total = orders.reduce((s, o) => s + (o.total || 0), 0);
         const avg   = orders.length > 0 ? Math.round(total / orders.length) : 0;
-        document.getElementById("orderCount").textContent = orders.length + " 筆";
-        document.getElementById("revenue").textContent    = "$" + total;
-        document.getElementById("avgOrder").textContent   = "$" + avg;
-
-        // ── 付款方式 ──
-        const payments = ["現金", "Line Pay"];
-        const paymentRows = payments.map(label => {
-          const filtered = orders.filter(o => o.payment === label);
-          const rev = filtered.reduce((s, o) => s + o.total, 0);
-          return statRowHTML(label, filtered.length + "筆", rev, total);
-        }).join("");
-        const paymentTotal = `
-          <div class="payment-total-row">
-            <span>${isMonth ? "本月營業額" : "今日營業額"}</span>
-            <strong>$${total}</strong>
-          </div>`;
-        document.getElementById("paymentStats").innerHTML = (paymentRows || noData()) + paymentTotal;
+        document.getElementById("revenueLabel").textContent = isMonth ? "本月營業額" : "今日營業額";
+        document.getElementById("orderCount").textContent   = orders.length + " 筆";
+        document.getElementById("revenue").textContent      = "$" + total;
+        document.getElementById("avgOrder").textContent     = "$" + avg;
 
         // ── 內用/外帶 ──
         const services = ["內用", "外帶"];
