@@ -568,6 +568,22 @@
         padding: 10px 0;
       }
 
+      .payment-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #f0f0f0;
+        margin-top: 10px;
+        padding-top: 10px;
+        font-size: 0.88rem;
+        color: #444;
+      }
+
+      .payment-total-row strong {
+        font-size: 1.1rem;
+        color: #1a2535;
+      }
+
       @media (max-width: 600px) {
         .analytics-row { grid-template-columns: 1fr; }
         .stat-label { max-width: 70px; }
@@ -909,12 +925,17 @@
 
         // ── 付款方式 ──
         const payments = ["現金", "Line Pay"];
-        document.getElementById("paymentStats").innerHTML =
-          payments.map(label => {
-            const filtered = orders.filter(o => o.payment === label);
-            const rev = filtered.reduce((s, o) => s + o.total, 0);
-            return statRowHTML(label, filtered.length + "筆", rev, total);
-          }).join("") || noData();
+        const paymentRows = payments.map(label => {
+          const filtered = orders.filter(o => o.payment === label);
+          const rev = filtered.reduce((s, o) => s + o.total, 0);
+          return statRowHTML(label, filtered.length + "筆", rev, total);
+        }).join("");
+        const paymentTotal = `
+          <div class="payment-total-row">
+            <span>今日營業額</span>
+            <strong>$${total}</strong>
+          </div>`;
+        document.getElementById("paymentStats").innerHTML = (paymentRows || noData()) + paymentTotal;
 
         // ── 內用/外帶 ──
         const services = ["內用", "外帶"];
