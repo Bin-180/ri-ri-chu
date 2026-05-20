@@ -936,8 +936,9 @@
         const catMap = {};
         CATEGORIES.forEach(c => { catMap[c] = { count: 0, revenue: 0 }; });
         orders.forEach(o => (o.items || []).forEach(item => {
-          const cat = CATEGORIES.includes(item.category) ? item.category : "其他";
-          if (!catMap[cat]) catMap[cat] = { count: 0, revenue: 0 };
+          const cat = CATEGORIES.includes(item.category)
+            ? item.category
+            : inferCategory(item.name);
           catMap[cat].count   += item.quantity;
           catMap[cat].revenue += item.lineTotal;
         }));
@@ -1015,6 +1016,24 @@
 
       function noData() {
         return '<div class="no-data">無資料</div>';
+      }
+
+      // 舊訂單無 category 欄位時，從品項顯示名稱推算分類
+      function inferCategory(displayName) {
+        const m = displayName.match(/（([^（）]+)）$/);
+        const variant  = m ? m[1] : null;
+        const baseName = variant ? displayName.slice(0, displayName.lastIndexOf("（")) : displayName;
+
+        if (variant === "吐司" || variant === "漢堡") {
+          return baseName.includes("花生") ? "手工花生（含蛋）" : "初麵包（含蛋）";
+        }
+        if (variant === "蛋餅" || variant === "墨西哥餅") return "初餅";
+        if (variant === "中"   || variant === "大")       return "初好茶";
+
+        const sweetNames = ["煉乳", "草莓", "奶酥", "藍莓", "手工花生", "明太子"];
+        if (sweetNames.some(n => baseName === n || baseName.startsWith(n))) return "初點甜";
+
+        return "初點心";
       }
     </script>
   </body>
