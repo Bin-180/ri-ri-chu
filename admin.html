@@ -1176,6 +1176,10 @@
             renderLiveOrders(docs);
           }, (err) => {
             console.error("Firestore 錯誤：", err);
+            document.getElementById("liveOrders").innerHTML =
+              `<div class="empty-state" style="color:#c0392b;font-size:0.85rem;">
+                ⚠️ 無法載入訂單<br><code style="font-size:0.75rem;">${err.code}: ${err.message}</code>
+               </div>`;
           });
       }
 
