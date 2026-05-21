@@ -1119,24 +1119,31 @@
       }
 
       function playOrderAlert() {
-        if (!alertCtx || alertCtx.state === "suspended") return;
-        try {
-          const play = (freq, start, dur) => {
-            const osc  = alertCtx.createOscillator();
-            const gain = alertCtx.createGain();
-            osc.connect(gain);
-            gain.connect(alertCtx.destination);
-            osc.frequency.value = freq;
-            osc.type = "sine";
-            gain.gain.setValueAtTime(0.5, alertCtx.currentTime + start);
-            gain.gain.exponentialRampToValueAtTime(0.001, alertCtx.currentTime + start + dur);
-            osc.start(alertCtx.currentTime + start);
-            osc.stop(alertCtx.currentTime + start + dur);
-          };
-          play(880,  0,    0.15);
-          play(1100, 0.18, 0.15);
-          play(880,  0.36, 0.25);
-        } catch (_) {}
+        if (!alertCtx) return;
+        const doPlay = () => {
+          try {
+            const play = (freq, start, dur) => {
+              const osc  = alertCtx.createOscillator();
+              const gain = alertCtx.createGain();
+              osc.connect(gain);
+              gain.connect(alertCtx.destination);
+              osc.frequency.value = freq;
+              osc.type = "sine";
+              gain.gain.setValueAtTime(0.5, alertCtx.currentTime + start);
+              gain.gain.exponentialRampToValueAtTime(0.001, alertCtx.currentTime + start + dur);
+              osc.start(alertCtx.currentTime + start);
+              osc.stop(alertCtx.currentTime + start + dur);
+            };
+            play(880,  0,    0.15);
+            play(1100, 0.18, 0.15);
+            play(880,  0.36, 0.25);
+          } catch (_) {}
+        };
+        if (alertCtx.state === "suspended") {
+          alertCtx.resume().then(doPlay).catch(() => {});
+        } else {
+          doPlay();
+        }
       }
 
       // ── 新訂單通知 ──
@@ -1517,7 +1524,6 @@
 
       // 舊訂單無 category 欄位時，從品項顯示名稱推算分類
       function testNotification() {
-        // 確保在使用者手勢內初始化音效（按鈕點擊本身就是手勢）
         initAlertAudio();
 
         const run = () => {
@@ -1526,16 +1532,19 @@
           btn.disabled = true;
           setTimeout(() => {
             playOrderAlert();
-            sendSwNotification(1);
+            try { sendSwNotification(1); } catch (_) {}
             btn.textContent = "🔔 測試通知";
             btn.disabled = false;
           }, 3000);
         };
 
-        if (Notification.permission === "default") {
-          Notification.requestPermission().then(p => run());
-          return;
-        }
+        try {
+          if (typeof Notification === "undefined") { run(); return; }
+          if (Notification.permission === "default") {
+            Notification.requestPermission().then(() => run()).catch(() => run());
+            return;
+          }
+        } catch (_) {}
         run();
       }
 
