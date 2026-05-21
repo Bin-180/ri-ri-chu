@@ -104,17 +104,28 @@ function renderVariantPicker() {
     variantConfirmEl.disabled = true;
   } else if (pendingItem.variants && pendingItem.variants.length > 0) {
     variantItemPriceEl.textContent = "";
-    variantOptionsEl.innerHTML = pendingItem.variants.map((v) => {
-      const photo = WRAPPER_PHOTOS[v.label];
-      return `
-        <button class="variant-btn" data-label="${v.label}" data-price="${v.price}" type="button">
-          ${photo ? `<img class="variant-btn-photo" src="${photo}" alt="${v.label}" loading="lazy">` : ""}
-          <span class="variant-btn-text">
+    const usePhotoStyle = pendingItem.variants.some((v) => WRAPPER_PHOTOS[v.label]);
+    if (usePhotoStyle) {
+      variantOptionsEl.innerHTML = pendingItem.variants.map((v) => {
+        const photo = WRAPPER_PHOTOS[v.label];
+        return `
+          <button class="variant-btn" data-label="${v.label}" data-price="${v.price}" type="button">
+            ${photo ? `<img class="variant-btn-photo" src="${photo}" alt="${v.label}" loading="lazy">` : ""}
+            <span class="variant-btn-text">
+              <span class="variant-btn-label">${v.label}</span>
+              <span class="variant-btn-price">${formatPrice(v.price)}</span>
+            </span>
+          </button>`;
+      }).join("");
+    } else {
+      variantOptionsEl.innerHTML = `<div class="variant-group-options">${
+        pendingItem.variants.map((v) => `
+          <button class="variant-btn" data-label="${v.label}" data-price="${v.price}" type="button">
             <span class="variant-btn-label">${v.label}</span>
             <span class="variant-btn-price">${formatPrice(v.price)}</span>
-          </span>
-        </button>`;
-    }).join("");
+          </button>`).join("")
+      }</div>`;
+    }
     variantConfirmEl.classList.add("hidden");
   } else {
     variantItemPriceEl.textContent = formatPrice(pendingItem.price);
