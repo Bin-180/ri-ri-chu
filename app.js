@@ -128,16 +128,37 @@ function hideVariantPicker() {
 // ── 菜單分類 ──
 
 function getCategories() {
-  return ["全部", ...new Set(menuItems.map((item) => item.category))];
+  return [...new Set(menuItems.map((item) => item.category))];
 }
 
 function renderCategories() {
   categoryTabsEl.innerHTML = getCategories()
-    .map(
-      (cat) =>
-        `<button class="category-tab ${cat === state.category ? "active" : ""}" data-category="${cat}" type="button">${cat}</button>`,
-    )
+    .map((cat) =>
+      `<button class="category-tab" data-category="${cat}" type="button">${cat}</button>`)
     .join("");
+}
+
+function setActiveTab(cat) {
+  categoryTabsEl.querySelectorAll(".category-tab").forEach((btn) => {
+    const active = btn.dataset.category === cat;
+    btn.classList.toggle("active", active);
+    if (active) btn.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  });
+}
+
+let sectionObserver = null;
+function setupSectionObserver() {
+  if (sectionObserver) sectionObserver.disconnect();
+  const headerH = document.querySelector(".sticky-header")?.offsetHeight || 100;
+  sectionObserver = new IntersectionObserver((entries) => {
+    // 取最靠近頂部的 intersecting section
+    const visible = entries
+      .filter(e => e.isIntersecting)
+      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    if (visible.length) setActiveTab(visible[0].target.dataset.section);
+  }, { rootMargin: `-${headerH + 4}px 0px -40% 0px`, threshold: 0 });
+  menuListEl.querySelectorAll(".category-section[data-section]")
+    .forEach(s => sectionObserver.observe(s));
 }
 
 function menuItemHTML(item) {
@@ -186,28 +207,17 @@ function sectionHeadingHTML(cat, items) {
 }
 
 function renderMenu() {
-  if (state.category === "全部") {
-    const categories = [...new Set(menuItems.map((item) => item.category))];
-    menuListEl.innerHTML = categories
-      .map((cat) => {
-        const items = menuItems.filter((item) => item.category === cat);
-        return `
-          <div class="category-section">
-            ${sectionHeadingHTML(cat, items)}
-            ${items.map(menuItemHTML).join("")}
-          </div>
-        `;
-      })
-      .join("");
-  } else {
-    const items = menuItems.filter((item) => item.category === state.category);
-    menuListEl.innerHTML = `
-      <div class="category-section">
-        ${sectionHeadingHTML(state.category, items)}
+  const categories = [...new Set(menuItems.map((item) => item.category))];
+  menuListEl.innerHTML = categories.map((cat) => {
+    const items = menuItems.filter((item) => item.category === cat);
+    return `
+      <div class="category-section" data-section="${cat}">
+        ${sectionHeadingHTML(cat, items)}
         ${items.map(menuItemHTML).join("")}
       </div>
     `;
-  }
+  }).join("");
+  setupSectionObserver();
 }
 
 // ── 購物車 ──
@@ -463,9 +473,13 @@ function handleMenuAdd(id) {
 categoryTabsEl.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-category]");
   if (!btn) return;
-  state.category = btn.dataset.category;
-  renderCategories();
-  renderMenu();
+  const cat = btn.dataset.category;
+  const section = menuListEl.querySelector(`[data-section="${cat}"]`);
+  if (!section) return;
+  const headerH = document.querySelector(".sticky-header")?.offsetHeight || 100;
+  const top = section.getBoundingClientRect().top + window.scrollY - headerH - 6;
+  window.scrollTo({ top, behavior: "smooth" });
+  setActiveTab(cat);
 });
 
 menuListEl.addEventListener("click", (e) => {
