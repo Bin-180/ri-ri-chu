@@ -7,7 +7,7 @@ async function loadMenuFromFirestore() {
     const snap = await db.collection("menu").orderBy("sortOrder").get();
     if (snap.empty) return;
     const fsItems = snap.docs
-      .map(doc => ({ ...doc.data() }))
+      .map(doc => ({ id: doc.id, ...doc.data() }))
       .filter(item => item.available !== false);
     if (fsItems.length === 0) return;
     menuItems = fsItems;
