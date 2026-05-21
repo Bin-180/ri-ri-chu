@@ -159,7 +159,7 @@ function menuItemHTML(item) {
         <span class="item-dots" aria-hidden="true"></span>
         <div class="item-price-action">
           <span class="item-price">${displayPrice}</span>
-          <button class="add-button" data-add="${item.id}" type="button" aria-label="加入 ${item.name}">＋</button>
+          <button class="add-button" type="button" aria-label="加入 ${item.name}" onclick="handleMenuAdd('${item.id}')">＋</button>
         </div>
       </div>
       ${item.description ? `<div class="item-desc">${item.description}</div>` : ""}
@@ -454,6 +454,12 @@ async function checkout() {
 
 // ── Event listeners ──
 
+function handleMenuAdd(id) {
+  const item = menuItems.find((m) => m.id === id) || DEFAULT_MENU.find((m) => m.id === id);
+  if (!item) return;
+  showVariantPicker(item);
+}
+
 categoryTabsEl.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-category]");
   if (!btn) return;
@@ -465,8 +471,7 @@ categoryTabsEl.addEventListener("click", (e) => {
 menuListEl.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-add]");
   if (!btn) return;
-  const item = menuItems.find((m) => m.id === btn.dataset.add);
-  showVariantPicker(item);
+  handleMenuAdd(btn.dataset.add);
 });
 
 variantOptionsEl.addEventListener("click", (e) => {
