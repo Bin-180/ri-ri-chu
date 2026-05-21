@@ -1549,8 +1549,9 @@
       }
 
       // ── Menu Admin ──
-      let menuAdminItems = [];
-      let menuAdminCat   = "";
+      let menuAdminItems  = [];
+      let menuAdminCat    = "";
+      let menuInFirestore = false;
 
       document.querySelector('[data-tab="menu"]').addEventListener("click", loadMenuAdmin);
 
@@ -1560,10 +1561,12 @@
         try {
           const snap = await db.collection("menu").orderBy("sortOrder").get();
           if (snap.empty) {
-            menuAdminItems = DEFAULT_MENU.slice();
+            menuAdminItems  = DEFAULT_MENU.slice();
+            menuInFirestore = false;
             statusEl.textContent = "（顯示預設菜單，尚未寫入資料庫）";
           } else {
-            menuAdminItems = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            menuAdminItems  = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            menuInFirestore = true;
             statusEl.textContent = `共 ${menuAdminItems.length} 項`;
           }
         } catch (e) {
@@ -1634,7 +1637,19 @@
         menuAdminItems[idx].available = makeAvailable;
         renderMenuAdmin();
         try {
-          await db.collection("menu").doc(id).update({ available: makeAvailable });
+          if (!menuInFirestore) {
+            // 菜單尚未匯入 Firestore，靜默批次寫入全部品項（含已修改的 available）
+            const batch = db.batch();
+            menuAdminItems.forEach((item, i) => {
+              const { id: itemId, ...data } = item;
+              batch.set(db.collection("menu").doc(itemId), { ...data, sortOrder: data.sortOrder ?? i });
+            });
+            await batch.commit();
+            menuInFirestore = true;
+            document.getElementById("menuAdminStatus").textContent = `共 ${menuAdminItems.length} 項`;
+          } else {
+            await db.collection("menu").doc(id).update({ available: makeAvailable });
+          }
         } catch (e) {
           menuAdminItems[idx].available = !makeAvailable;
           renderMenuAdmin();
@@ -1649,7 +1664,18 @@
         menuAdminItems = menuAdminItems.filter(i => i.id !== id);
         renderMenuAdmin();
         try {
-          await db.collection("menu").doc(id).delete();
+          if (!menuInFirestore) {
+            // 先批次寫入（不含已刪除品項），再標記已在 Firestore
+            const batch = db.batch();
+            menuAdminItems.forEach((it, i) => {
+              const { id: itemId, ...data } = it;
+              batch.set(db.collection("menu").doc(itemId), { ...data, sortOrder: data.sortOrder ?? i });
+            });
+            await batch.commit();
+            menuInFirestore = true;
+          } else {
+            await db.collection("menu").doc(id).delete();
+          }
           document.getElementById("menuAdminStatus").textContent = `已刪除「${item.name}」`;
         } catch (e) {
           alert("刪除失敗：" + e.message);
