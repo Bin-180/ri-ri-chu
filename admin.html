@@ -1024,14 +1024,16 @@
         document.getElementById("loginScreen").classList.add("hidden");
         document.getElementById("adminScreen").classList.remove("hidden");
         document.getElementById("adminEmail").textContent = user.email;
-        if (Notification.permission === "default") Notification.requestPermission();
-        startNoSleep();
-        startListening();
-        document.getElementById("testNotifyBtn").style.display = "";
+        startListening(); // 最優先，確保訂單監聽不受後面任何錯誤影響
         setDefaultDate("listDate",  listPeriod);
         setDefaultDate("statsDate", statsPeriod);
         loadOrderList();
         loadStats();
+        try { document.getElementById("testNotifyBtn").style.display = ""; } catch (_) {}
+        try { startNoSleep(); } catch (_) {}
+        try {
+          if (Notification?.permission === "default") Notification.requestPermission();
+        } catch (_) {}
       }
 
       // ── Live orders ──
