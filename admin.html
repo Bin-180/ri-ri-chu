@@ -1090,16 +1090,10 @@
         } catch (_) {}
       }
 
-      // 分頁重新可見時：重新喚醒 + 重新連線 Firestore
+      // 分頁重新可見時：重新喚醒（Firestore SDK 會自動重新連線，不需手動重啟）
       document.addEventListener("visibilitychange", () => {
         if (document.visibilityState !== "visible") return;
         startNoSleep();
-        // 重新建立 Firestore 即時監聽（螢幕解鎖後可能已斷線）
-        if (unsubscribe) {
-          unsubscribe();
-          unsubscribe = null;
-          startListening();
-        }
       });
 
       // ── 通知音效 ──
