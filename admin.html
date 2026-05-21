@@ -1517,24 +1517,26 @@
 
       // 舊訂單無 category 欄位時，從品項顯示名稱推算分類
       function testNotification() {
+        // 確保在使用者手勢內初始化音效（按鈕點擊本身就是手勢）
+        initAlertAudio();
+
+        const run = () => {
+          const btn = document.getElementById("testNotifyBtn");
+          btn.textContent = "3 秒後…";
+          btn.disabled = true;
+          setTimeout(() => {
+            playOrderAlert();
+            sendSwNotification(1);
+            btn.textContent = "🔔 測試通知";
+            btn.disabled = false;
+          }, 3000);
+        };
+
         if (Notification.permission === "default") {
-          Notification.requestPermission().then(p => { if (p === "granted") testNotification(); });
+          Notification.requestPermission().then(p => run());
           return;
         }
-        if (Notification.permission === "denied") {
-          alert("通知權限被封鎖，請到瀏覽器設定 → 網站設定 → 通知，允許此網站");
-          return;
-        }
-        // 3 秒後跳通知，讓你有時間切到其他 App 測試
-        const btn = document.getElementById("testNotifyBtn");
-        btn.textContent = "3 秒後跳通知…";
-        btn.disabled = true;
-        setTimeout(() => {
-          sendSwNotification(1);
-          playOrderAlert();
-          btn.textContent = "🔔 測試通知";
-          btn.disabled = false;
-        }, 3000);
+        run();
       }
 
       // ── Menu Admin ──
