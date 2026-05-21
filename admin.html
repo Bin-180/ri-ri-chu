@@ -344,20 +344,7 @@
 
       .history-controls input[type="date"]:focus { border-color: #1a2535; }
 
-      #loadHistoryBtn {
-        padding: 8px 20px;
-        background: #1a2535;
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: opacity 0.12s;
-      }
-
-      #loadHistoryBtn:disabled { opacity: 0.6; }
-
-      .history-summary {
+.history-summary {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 10px;
@@ -416,8 +403,8 @@
       }
 
       .analytics-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        display: flex;
+        flex-direction: column;
         gap: 10px;
       }
 
@@ -578,6 +565,77 @@
         padding: 10px 0;
       }
 
+      /* ── Pie chart ── */
+      .pie-wrap {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+      }
+
+      .pie {
+        flex-shrink: 0;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+      }
+
+      .pie-legend {
+        flex: 1;
+        min-width: 0;
+        max-height: 160px;
+        overflow-y: auto;
+      }
+
+      .pie-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 6px;
+        font-size: 0.76rem;
+      }
+
+      .pie-legend-item:last-child { margin-bottom: 0; }
+
+      .pie-dot {
+        flex-shrink: 0;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+      }
+
+      .pie-legend-label {
+        flex: 1;
+        min-width: 0;
+        color: #444;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .pie-legend-value {
+        flex-shrink: 0;
+        color: #999;
+        font-size: 0.7rem;
+      }
+
+      .test-notify-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 50;
+        background: #1a2535;
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 18px;
+        font-size: 0.82rem;
+        font-family: inherit;
+        cursor: pointer;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+        opacity: 0.7;
+      }
+      .test-notify-btn:active { opacity: 1; }
+
       .period-toggle {
         display: flex;
         border: 1.5px solid #e0e0e0;
@@ -617,6 +675,160 @@
         .h-meta { order: 5; width: 100%; }
         #adminEmail { display: none; }
       }
+      /* ── Menu Admin ── */
+      .menu-admin-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .menu-admin-status { font-size: 0.78rem; color: #aaa; }
+      .menu-seed-btn {
+        padding: 7px 14px;
+        border: 1.5px solid #ddd;
+        border-radius: 6px;
+        background: #fafafa;
+        font-size: 0.8rem;
+        color: #666;
+        cursor: pointer;
+      }
+      .menu-cat-tabs {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .menu-cat-btn {
+        padding: 5px 12px;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 20px;
+        background: #fff;
+        font-size: 0.76rem;
+        color: #666;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .menu-cat-btn.active { background: #1a2535; color: #fff; border-color: #1a2535; }
+      .menu-item-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 14px;
+        background: #fff;
+        border-radius: 8px;
+        margin-bottom: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        transition: opacity 0.15s;
+      }
+      .menu-item-row.unavail { opacity: 0.42; }
+      .menu-item-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+      .menu-item-name { flex: 1; font-size: 0.86rem; color: #222; font-weight: 500; }
+      .menu-item-price { font-size: 0.76rem; color: #999; min-width: 46px; text-align: right; }
+      .menu-item-actions { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+      .btn-avail {
+        padding: 3px 9px;
+        border-radius: 10px;
+        border: 1.5px solid;
+        font-size: 0.7rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn-avail.on  { border-color: #4a7c59; color: #4a7c59; background: #f0f8f4; }
+      .btn-avail.off { border-color: #ccc; color: #bbb; background: #f8f8f8; }
+      .btn-edit-mi, .btn-del-mi {
+        padding: 4px 9px;
+        border-radius: 4px;
+        border: 1.5px solid #e0e0e0;
+        background: #fff;
+        font-size: 0.76rem;
+        cursor: pointer;
+      }
+      .btn-del-mi { color: #c0392b; }
+      .menu-add-fab {
+        display: block;
+        margin: 14px 0 0 auto;
+        padding: 10px 22px;
+        background: #1a2535;
+        color: #fff;
+        border: none;
+        border-radius: 24px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+      }
+
+      /* Edit Modal */
+      .mm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 300;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+      }
+      @media (min-width: 600px) { .mm-overlay { align-items: center; } }
+      .mm-card {
+        background: #fff;
+        border-radius: 16px 16px 0 0;
+        padding: 22px 20px 28px;
+        width: 100%;
+        max-width: 500px;
+        max-height: 88vh;
+        overflow-y: auto;
+      }
+      @media (min-width: 600px) { .mm-card { border-radius: 16px; } }
+      .mm-card h3 { font-size: 1rem; font-weight: 700; color: #1a2535; margin-bottom: 14px; }
+      .mm-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 9px;
+        font-size: 0.82rem;
+      }
+      .mm-row > label:first-child { flex-shrink: 0; width: 52px; color: #888; }
+      .mm-row input[type="text"],
+      .mm-row input[type="number"],
+      .mm-row select {
+        flex: 1;
+        padding: 6px 9px;
+        border: 1.5px solid #ddd;
+        border-radius: 6px;
+        font-size: 0.84rem;
+        outline: none;
+        font-family: inherit;
+      }
+      .mm-row input[type="color"] { width: 36px; height: 30px; border: 1.5px solid #ddd; border-radius: 5px; cursor: pointer; padding: 1px; }
+      .mm-price-type { display: flex; gap: 14px; font-size: 0.8rem; flex-wrap: wrap; }
+      .mm-price-type label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+      .mm-divider { font-size: 0.7rem; color: #aaa; letter-spacing: 0.06em; margin: 10px 0 6px; text-transform: uppercase; }
+      .mm-variant-row, .mm-step-opt {
+        display: flex; gap: 6px; align-items: center; margin-bottom: 5px;
+      }
+      .mm-variant-row input, .mm-step-opt input {
+        padding: 5px 7px;
+        border: 1.5px solid #ddd;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        font-family: inherit;
+      }
+      .mm-variant-row .v-label, .mm-step-opt .so-label { flex: 2; }
+      .mm-variant-row .v-price, .mm-step-opt .so-price { flex: 1; max-width: 72px; }
+      .mm-remove-btn { padding: 3px 7px; border: none; background: #fee; color: #c0392b; border-radius: 4px; cursor: pointer; font-size: 0.78rem; }
+      .mm-add-row-btn {
+        display: block; width: 100%; padding: 5px; border: 1.5px dashed #ccc; border-radius: 5px;
+        background: #fafafa; color: #888; font-size: 0.76rem; cursor: pointer; margin-bottom: 8px; text-align: center;
+      }
+      .mm-step { margin-bottom: 12px; }
+      .mm-step-label { font-size: 0.76rem; color: #888; margin-bottom: 5px; display: flex; align-items: center; gap: 7px; }
+      .mm-step-label input { flex: 1; padding: 4px 7px; border: 1.5px solid #ddd; border-radius: 5px; font-size: 0.8rem; font-family: inherit; }
+      .mm-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; padding-top: 14px; border-top: 1px solid #f0f0f0; }
+      .mm-footer button { padding: 9px 20px; border-radius: 6px; font-size: 0.86rem; cursor: pointer; font-family: inherit; }
+      .mm-cancel { background: #f5f5f5; border: 1.5px solid #ddd; color: #555; }
+      .mm-save   { background: #1a2535; border: none; color: #fff; font-weight: 600; }
+
     </style>
   </head>
   <body>
@@ -656,7 +868,9 @@
         <button class="tab-btn active" data-tab="live">
           收單 <span id="pendingBadge" class="badge hidden">0</span>
         </button>
-        <button class="tab-btn" data-tab="history">歷史</button>
+        <button class="tab-btn" data-tab="orderList">訂單明細</button>
+        <button class="tab-btn" data-tab="stats">統計數據</button>
+        <button class="tab-btn" data-tab="menu">菜單管理</button>
       </div>
 
       <!-- 收單 tab -->
@@ -666,33 +880,42 @@
         </div>
       </div>
 
-      <!-- 歷史 tab -->
-      <div id="historyTab" class="tab-content hidden">
+      <!-- 訂單明細 tab -->
+      <div id="orderListTab" class="tab-content hidden">
         <div class="history-controls">
           <div class="period-toggle">
-            <button class="period-btn active" data-period="day" type="button">日</button>
-            <button class="period-btn" data-period="month" type="button">月</button>
+            <button class="period-btn list-period-btn active" data-period="day" type="button">日</button>
+            <button class="period-btn list-period-btn" data-period="month" type="button">月</button>
           </div>
-          <input type="date" id="historyDate" />
-          <button id="loadHistoryBtn">載入</button>
+          <input type="date" id="listDate" />
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </div>
+
+      <!-- 統計數據 tab -->
+      <div id="statsTab" class="tab-content hidden">
+        <div class="history-controls">
+          <div class="period-toggle">
+            <button class="period-btn stats-period-btn active" data-period="day" type="button">日</button>
+            <button class="period-btn stats-period-btn" data-period="month" type="button">月</button>
+          </div>
+          <input type="date" id="statsDate" />
         </div>
 
-        <!-- 數據分析 -->
-        <div id="historyAnalytics" class="hidden">
-
+        <div id="historyAnalytics">
           <!-- 概覽卡 -->
           <div class="history-summary">
             <div class="summary-card">
               <span class="summary-label">訂單數</span>
-              <strong id="orderCount">0</strong>
+              <strong id="orderCount">—</strong>
             </div>
             <div class="summary-card">
               <span class="summary-label" id="revenueLabel">今日營業額</span>
-              <strong id="revenue">$0</strong>
+              <strong id="revenue">—</strong>
             </div>
             <div class="summary-card">
               <span class="summary-label">平均客單價</span>
-              <strong id="avgOrder">$0</strong>
+              <strong id="avgOrder">—</strong>
             </div>
           </div>
 
@@ -705,7 +928,7 @@
           <!-- 各時段訂單量 -->
           <div class="analytics-panel">
             <p class="analytics-title" id="chartTitle">各時段訂單量</p>
-            <div id="hourlyChart" class="hourly-chart-wrap"></div>
+            <div id="hourlyChart"></div>
           </div>
 
           <!-- 類別銷售 + 品項排行 -->
@@ -719,20 +942,31 @@
               <div id="itemRanking"></div>
             </div>
           </div>
-
         </div>
+      </div>
 
-        <!-- 訂單明細 -->
-        <p class="analytics-section-label hidden" id="historyListLabel">訂單明細</p>
-        <div id="historyList" class="history-list"></div>
+      <!-- 菜單管理 tab -->
+      <div id="menuTab" class="tab-content hidden">
+        <div class="menu-admin-bar">
+          <span id="menuAdminStatus" class="menu-admin-status"></span>
+          <button class="menu-seed-btn" onclick="seedMenuAdmin()">↺ 匯入預設菜單</button>
+        </div>
+        <div id="menuCatTabs" class="menu-cat-tabs"></div>
+        <div id="menuAdminList"></div>
+        <button class="menu-add-fab" onclick="openMenuModal('')">＋ 新增品項</button>
       </div>
 
     </div>
+
+    <!-- 通知測試按鈕（僅後台可見） -->
+    <button class="test-notify-btn" id="testNotifyBtn" style="display:none"
+      onclick="testNotification()">🔔 測試通知</button>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="menu-data.js"></script>
     <script>
       // ── Tab switching ──
       document.querySelectorAll(".tab-btn").forEach((btn) => {
@@ -790,13 +1024,144 @@
         document.getElementById("loginScreen").classList.add("hidden");
         document.getElementById("adminScreen").classList.remove("hidden");
         document.getElementById("adminEmail").textContent = user.email;
+        if (Notification.permission === "default") Notification.requestPermission();
+        startNoSleep();
         startListening();
-        setDefaultDate();
+        document.getElementById("testNotifyBtn").style.display = "";
+        setDefaultDate("listDate",  listPeriod);
+        setDefaultDate("statsDate", statsPeriod);
+        loadOrderList();
+        loadStats();
       }
 
       // ── Live orders ──
-      let unsubscribe   = null;
-      let currentPeriod = "day";
+      let unsubscribe      = null;
+      let listPeriod       = "day";
+      let statsPeriod      = "day";
+      let prevOrderCount   = -1;   // -1 = initial load, don't alert yet
+
+      // ── Service Worker ──
+      let swRegistration = null;
+
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./firebase-messaging-sw.js")
+          .then(reg => { swRegistration = reg; })
+          .catch(() => {});
+      }
+
+      // ── 防止螢幕休眠 ──
+      // 方法一：Wake Lock API（Android Chrome）
+      // 方法二：靜音音頻循環（iOS Safari — iOS 不支援 Wake Lock）
+      let wakeLock       = null;
+      let noSleepCtx     = null;
+      let noSleepTimerId = null;
+
+      async function startNoSleep() {
+        // Android / 支援 Wake Lock 的瀏覽器
+        if ("wakeLock" in navigator) {
+          try {
+            wakeLock = await navigator.wakeLock.request("screen");
+            wakeLock.addEventListener("release", () => setTimeout(startNoSleep, 1500));
+            return; // Wake Lock 成功，不需要音頻 fallback
+          } catch (_) {}
+        }
+        // iOS fallback：每 15 秒播一個幾乎聽不到的靜音音，
+        // iOS 只要有 AudioContext 活躍就不會完全凍結分頁
+        try {
+          if (!noSleepCtx || noSleepCtx.state === "closed") {
+            noSleepCtx = new (window.AudioContext || window.webkitAudioContext)();
+          }
+          if (noSleepCtx.state === "suspended") await noSleepCtx.resume();
+          clearTimeout(noSleepTimerId);
+          function tick() {
+            try {
+              const buf  = noSleepCtx.createBuffer(1, noSleepCtx.sampleRate * 0.5, noSleepCtx.sampleRate);
+              const src  = noSleepCtx.createBufferSource();
+              const gain = noSleepCtx.createGain();
+              gain.gain.value = 0.001; // 幾乎無聲
+              src.buffer = buf;
+              src.connect(gain);
+              gain.connect(noSleepCtx.destination);
+              src.start();
+            } catch (_) {}
+            noSleepTimerId = setTimeout(tick, 15000);
+          }
+          tick();
+        } catch (_) {}
+      }
+
+      // 分頁重新可見時：重新喚醒 + 重新連線 Firestore
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState !== "visible") return;
+        startNoSleep();
+        // 重新建立 Firestore 即時監聽（螢幕解鎖後可能已斷線）
+        if (unsubscribe) {
+          unsubscribe();
+          unsubscribe = null;
+          startListening();
+        }
+      });
+
+      // ── 通知音效 ──
+      function playOrderAlert() {
+        try {
+          const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+          const play = (freq, start, dur) => {
+            const osc  = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            osc.type = "sine";
+            gain.gain.setValueAtTime(0.5, ctx.currentTime + start);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+            osc.start(ctx.currentTime + start);
+            osc.stop(ctx.currentTime + start + dur);
+          };
+          play(880,  0,    0.15);
+          play(1100, 0.18, 0.15);
+          play(880,  0.36, 0.25);
+        } catch (_) {}
+      }
+
+      // ── 新訂單通知 ──
+      function sendSwNotification(count) {
+        if (Notification.permission !== "granted") return;
+        // navigator.serviceWorker.controller 比 swRegistration.active 更可靠
+        const sw = navigator.serviceWorker?.controller;
+        if (sw) {
+          sw.postMessage({ type: "NEW_ORDER", count });
+        } else {
+          // SW 尚未接管頁面（首次載入）→ 直接用 Notification API
+          new Notification("🔔 日日初 — 新訂單", {
+            body: count > 1 ? `目前共有 ${count} 筆待處理訂單` : "有新的訂單進來了！",
+            icon: "logo.jpg",
+            tag:  "new-order",
+            requireInteraction: true,
+          });
+        }
+      }
+
+      function notifyNewOrder(count) {
+        playOrderAlert();
+        sendSwNotification(count);
+
+        // 分頁標題閃爍提示
+        flashTitle("🔔 新訂單！");
+      }
+
+      let flashInterval = null;
+      function flashTitle(msg) {
+        clearInterval(flashInterval);
+        const orig = "日日初後台";
+        let show = true;
+        flashInterval = setInterval(() => {
+          document.title = show ? msg : orig;
+          show = !show;
+        }, 900);
+        // 30 秒後停止閃爍
+        setTimeout(() => { clearInterval(flashInterval); document.title = orig; }, 30000);
+      }
 
       function startListening() {
         if (unsubscribe) unsubscribe();
@@ -821,12 +1186,23 @@
         if (docs.length === 0) {
           container.innerHTML = '<div class="empty-state">✓ 目前無待處理訂單</div>';
           badge.classList.add("hidden");
+          prevOrderCount = 0;
           return;
         }
+
+        if (prevOrderCount >= 0 && docs.length > prevOrderCount) {
+          notifyNewOrder(docs.length);
+        }
+        prevOrderCount = docs.length;
 
         badge.textContent = docs.length;
         badge.classList.remove("hidden");
         container.innerHTML = docs.map((doc) => orderCardHTML(doc.id, doc.data())).join("");
+      }
+
+      function formatCustomer(o) {
+        if (o.service === "內用") return o.customer + "桌";
+        return o.customer;
       }
 
       function formatDate(ts) {
@@ -868,7 +1244,7 @@
           <div class="order-card" id="card-${id}">
             <div class="card-header">
               <span class="order-num">#${o.orderNumber}</span>
-              <span class="order-customer">${o.customer}</span>
+              <span class="order-customer">${formatCustomer(o)}</span>
               <span class="order-time">${formatTime(o.createdAt)}</span>
             </div>
             <div class="card-meta">${o.service} ・ ${o.payment}</div>
@@ -900,13 +1276,13 @@
       }
 
       // ── History ──
-      function setDefaultDate() {
+      function setDefaultDate(inputId, period) {
         const t    = new Date();
         const yyyy = t.getFullYear();
         const mm   = String(t.getMonth() + 1).padStart(2, "0");
         const dd   = String(t.getDate()).padStart(2, "0");
-        const input = document.getElementById("historyDate");
-        if (currentPeriod === "month") {
+        const input = document.getElementById(inputId);
+        if (period === "month") {
           input.type  = "month";
           input.value = `${yyyy}-${mm}`;
         } else {
@@ -915,32 +1291,31 @@
         }
       }
 
-      document.getElementById("loadHistoryBtn").addEventListener("click", loadHistory);
+      document.getElementById("listDate").addEventListener("change", loadOrderList);
+      document.getElementById("statsDate").addEventListener("change", loadStats);
 
-      document.querySelectorAll(".period-btn").forEach(btn => {
+      document.querySelectorAll(".list-period-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-          currentPeriod = btn.dataset.period;
-          document.querySelectorAll(".period-btn").forEach(b =>
-            b.classList.toggle("active", b === btn)
-          );
-          setDefaultDate();
-          document.getElementById("historyAnalytics").classList.add("hidden");
-          document.getElementById("historyListLabel").classList.add("hidden");
-          document.getElementById("historyList").innerHTML = "";
+          listPeriod = btn.dataset.period;
+          document.querySelectorAll(".list-period-btn").forEach(b => b.classList.toggle("active", b === btn));
+          setDefaultDate("listDate", listPeriod);
+          loadOrderList();
         });
       });
 
-      async function loadHistory() {
-        const dateStr = document.getElementById("historyDate").value;
-        if (!dateStr) return;
+      document.querySelectorAll(".stats-period-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          statsPeriod = btn.dataset.period;
+          document.querySelectorAll(".stats-period-btn").forEach(b => b.classList.toggle("active", b === btn));
+          setDefaultDate("statsDate", statsPeriod);
+          loadStats();
+        });
+      });
 
-        const btn = document.getElementById("loadHistoryBtn");
-        btn.disabled = true;
-        btn.textContent = "載入中…";
-
+      async function fetchOrders(dateStr, period) {
         const parts = dateStr.split("-").map(Number);
         let start, end;
-        if (currentPeriod === "month") {
+        if (period === "month") {
           const [y, m] = parts;
           start = new Date(y, m - 1, 1, 0, 0, 0);
           end   = new Date(y, m, 0, 23, 59, 59);
@@ -949,32 +1324,55 @@
           start = new Date(y, m - 1, d, 0, 0, 0);
           end   = new Date(y, m - 1, d, 23, 59, 59);
         }
+        const snap = await db.collection("orders")
+          .where("createdAt", ">=", firebase.firestore.Timestamp.fromDate(start))
+          .where("createdAt", "<=", firebase.firestore.Timestamp.fromDate(end))
+          .orderBy("createdAt", "desc")
+          .get();
+        return snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(o => o.status === "done");
+      }
 
+      async function loadOrderList() {
+        const dateStr = document.getElementById("listDate").value;
+        if (!dateStr) return;
         try {
-          const snap = await db.collection("orders")
-            .where("createdAt", ">=", firebase.firestore.Timestamp.fromDate(start))
-            .where("createdAt", "<=", firebase.firestore.Timestamp.fromDate(end))
-            .orderBy("createdAt", "desc")
-            .get();
-
-          const orders = snap.docs
-            .map((doc) => ({ id: doc.id, ...doc.data() }))
-            .filter((o) => o.status === "done");
-
-          renderHistory(orders, dateStr);
+          const orders = await fetchOrders(dateStr, listPeriod);
+          renderOrderList(orders, listPeriod === "month");
         } catch (err) {
           console.error(err);
-          alert("載入失敗：" + err.message);
-        } finally {
-          btn.disabled = false;
-          btn.textContent = "載入";
+          document.getElementById("historyList").innerHTML = '<div class="empty-state">載入失敗</div>';
         }
       }
 
-      function renderHistory(orders, dateStr) {
-        const isMonth = currentPeriod === "month";
-        document.getElementById("historyAnalytics").classList.remove("hidden");
-        document.getElementById("historyListLabel").classList.remove("hidden");
+      async function loadStats() {
+        const dateStr = document.getElementById("statsDate").value;
+        if (!dateStr) return;
+        try {
+          const orders = await fetchOrders(dateStr, statsPeriod);
+          renderStats(orders, dateStr, statsPeriod === "month");
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      function renderOrderList(orders, isMonth) {
+        const list = document.getElementById("historyList");
+        if (orders.length === 0) {
+          list.innerHTML = '<div class="empty-state">此期間無已完成訂單</div>';
+          return;
+        }
+        list.innerHTML = orders.map(o => `
+          <div class="history-card">
+            <span class="h-num">#${o.orderNumber}</span>
+            <span class="h-customer">${formatCustomer(o)}</span>
+            <span class="h-meta">${o.service} ・ ${o.payment}</span>
+            <span class="h-total">$${o.total}</span>
+            <span class="h-time">${isMonth ? formatDate(o.createdAt) : formatTime(o.createdAt)}</span>
+          </div>`).join("");
+      }
+
+      function renderStats(orders, dateStr) {
+        const isMonth = statsPeriod === "month";
 
         // ── 概覽 ──
         const total = orders.reduce((s, o) => s + (o.total || 0), 0);
@@ -986,23 +1384,24 @@
 
         // ── 內用/外帶 ──
         const services = ["內用", "外帶"];
+        const serviceSegs = services.map(label => {
+          const filtered = orders.filter(o => o.service === label);
+          const rev = filtered.reduce((s, o) => s + o.total, 0);
+          return { label, value: rev, text: `${filtered.length}筆 $${rev}` };
+        }).filter(s => s.value > 0);
         document.getElementById("serviceStats").innerHTML =
-          services.map(label => {
-            const filtered = orders.filter(o => o.service === label);
-            const rev = filtered.reduce((s, o) => s + o.total, 0);
-            return statRowHTML(label, filtered.length + "筆", rev, total);
-          }).join("") || noData();
+          buildPieChart(serviceSegs, serviceSegs.reduce((s, v) => s + v.value, 0));
 
         // ── 圖表（日→時段 / 月→每日）──
         document.getElementById("chartTitle").textContent = isMonth ? "各日訂單量" : "各時段訂單量";
         document.getElementById("hourlyChart").innerHTML  = isMonth
-          ? buildDailyChart(orders, dateStr)
-          : buildHourlyChart(orders);
+          ? buildDailyPie(orders, dateStr)
+          : buildHourlyPie(orders);
 
         // ── 類別銷售（固定菜單順序）──
         const CATEGORIES = [
           "初麵包（含蛋）", "初餅", "手工花生（含蛋）",
-          "初點甜", "初點心", "初好茶"
+          "初點甜", "棉花糖", "熱狗堡", "初點心", "初炒麵", "初好茶"
         ];
         const catMap = {};
         CATEGORIES.forEach(c => { catMap[c] = { count: 0, revenue: 0 }; });
@@ -1014,10 +1413,11 @@
           catMap[cat].revenue += item.lineTotal;
         }));
         const catTotal = Object.values(catMap).reduce((s, v) => s + v.revenue, 0);
+        const catSegs = Object.entries(catMap)
+          .filter(([, d]) => d.revenue > 0)
+          .map(([cat, d]) => ({ label: cat, value: d.revenue, text: `$${d.revenue} ${d.count}份` }));
         document.getElementById("categoryStats").innerHTML =
-          Object.entries(catMap)
-            .map(([cat, d]) => statRowHTML(cat, d.count + "份", d.revenue, catTotal))
-            .join("");
+          buildPieChart(catSegs, catTotal);
 
         // ── 品項排行 ──
         const itemMap = {};
@@ -1025,97 +1425,78 @@
           itemMap[item.name] = (itemMap[item.name] || 0) + item.quantity;
         }));
         const itemSorted = Object.entries(itemMap).sort((a, b) => b[1] - a[1]).slice(0, 15);
-        const itemMax    = itemSorted[0]?.[1] || 1;
+        const itemTotal  = itemSorted.reduce((s, [, qty]) => s + qty, 0);
+        const itemSegs  = itemSorted.map(([name, qty]) => ({ label: name, value: qty, text: `${qty}份` }));
         document.getElementById("itemRanking").innerHTML =
-          itemSorted.length > 0
-            ? itemSorted.map(([name, qty]) => `
-                <div class="rank-item">
-                  <span class="rank-name">${name}</span>
-                  <div class="rank-bar-wrap">
-                    <div class="rank-bar" style="width:${Math.round(qty / itemMax * 100)}%"></div>
-                  </div>
-                  <span class="rank-count">${qty}</span>
-                </div>`).join("")
-            : noData();
+          buildPieChart(itemSegs, itemTotal);
 
-        // ── 訂單明細 ──
-        const list = document.getElementById("historyList");
-        if (orders.length === 0) {
-          list.innerHTML = '<div class="empty-state">此期間無已完成訂單</div>';
-          return;
-        }
-        list.innerHTML = orders.map(o => `
-          <div class="history-card">
-            <span class="h-num">#${o.orderNumber}</span>
-            <span class="h-customer">${o.customer}</span>
-            <span class="h-meta">${o.service} ・ ${o.payment}</span>
-            <span class="h-total">$${o.total}</span>
-            <span class="h-time">${isMonth ? formatDate(o.createdAt) : formatTime(o.createdAt)}</span>
-          </div>`).join("");
       }
 
-      function statRowHTML(label, countText, revenue, total) {
-        const pct = total > 0 ? Math.round(revenue / total * 100) : 0;
+      const PIE_COLORS = [
+        "#3b6ea5","#e6a817","#e05c5c","#5da67d","#9b72c8",
+        "#5b9a8b","#d4784a","#6a8dc8","#9db85a","#b85a7d",
+        "#4fa3a3","#c86e5c","#6db06d","#a87bc8","#8a8a5c"
+      ];
+
+      function buildPieChart(segments, total) {
+        if (!total || segments.length === 0) return noData();
+        let cum = 0;
+        const segs = segments.map((seg, i) => {
+          const pct = seg.value / total * 100;
+          const from = cum;
+          cum += pct;
+          return { ...seg, color: PIE_COLORS[i % PIE_COLORS.length], from, to: cum };
+        });
+        const gradient = segs.map(s =>
+          `${s.color} ${s.from.toFixed(2)}% ${s.to.toFixed(2)}%`
+        ).join(", ");
+        const legend = segs.map(s => `
+          <div class="pie-legend-item">
+            <span class="pie-dot" style="background:${s.color}"></span>
+            <span class="pie-legend-label">${s.label}</span>
+            <span class="pie-legend-value">${s.text}</span>
+          </div>`).join("");
         return `
-          <div class="stat-row">
-            <span class="stat-label">${label}</span>
-            <div class="stat-bar-wrap"><div class="stat-bar" style="width:${pct}%"></div></div>
-            <span class="stat-value">$${revenue} · ${countText}</span>
+          <div class="pie-wrap">
+            <div class="pie" style="background:conic-gradient(${gradient})"></div>
+            <div class="pie-legend">${legend}</div>
           </div>`;
       }
 
-      function buildDailyChart(orders, dateStr) {
-        const BAR_MAX = 76;
-        const [y, m]  = dateStr.split("-").map(Number);
-        const days    = new Date(y, m, 0).getDate();
-        const counts  = {};
+      function buildDailyPie(orders, dateStr) {
+        const [y, m] = dateStr.split("-").map(Number);
+        const days   = new Date(y, m, 0).getDate();
+        const counts = {};
         for (let d = 1; d <= days; d++) counts[d] = 0;
         orders.forEach(o => {
           if (!o.createdAt) return;
           const d = new Date(o.createdAt.toMillis()).getDate();
           if (d in counts) counts[d]++;
         });
-        const max = Math.max(...Object.values(counts), 1);
-        return Object.entries(counts).map(([d, count]) => {
-          const barH = count > 0 ? Math.max(Math.round(count / max * BAR_MAX), 4) : 0;
-          return `
-            <div class="chart-col">
-              <span class="chart-count">${count || ""}</span>
-              <div class="chart-bar" style="height:${barH}px"></div>
-              <span class="chart-label">${d}</span>
-            </div>`;
-        }).join("");
+        const total = Object.values(counts).reduce((s, v) => s + v, 0);
+        const segments = Object.entries(counts)
+          .filter(([, v]) => v > 0)
+          .map(([d, v]) => ({ label: `${d}日`, value: v, text: `${v}筆` }));
+        return buildPieChart(segments, total);
       }
 
-      function buildHourlyChart(orders) {
-        const BAR_MAX = 76;
-
-        // 先統計實際出現的小時
+      function buildHourlyPie(orders) {
         const raw = {};
         orders.forEach(o => {
           if (!o.createdAt) return;
           const h = new Date(o.createdAt.toMillis()).getHours();
           raw[h] = (raw[h] || 0) + 1;
         });
-
-        // 顯示範圍：至少涵蓋 6–13，若有資料落在範圍外則自動延伸
         const dataHours = Object.keys(raw).map(Number);
         const minH = dataHours.length > 0 ? Math.min(...dataHours, 6)  : 6;
         const maxH = dataHours.length > 0 ? Math.max(...dataHours, 13) : 13;
-
         const counts = {};
         for (let h = minH; h <= maxH; h++) counts[h] = raw[h] || 0;
-
-        const max = Math.max(...Object.values(counts), 1);
-        return Object.entries(counts).map(([h, count]) => {
-          const barH = count > 0 ? Math.max(Math.round(count / max * BAR_MAX), 4) : 0;
-          return `
-            <div class="chart-col">
-              <span class="chart-count">${count || ""}</span>
-              <div class="chart-bar" style="height:${barH}px"></div>
-              <span class="chart-label">${h}時</span>
-            </div>`;
-        }).join("");
+        const total = Object.values(counts).reduce((s, v) => s + v, 0);
+        const segments = Object.entries(counts)
+          .filter(([, v]) => v > 0)
+          .map(([h, v]) => ({ label: `${h}時`, value: v, text: `${v}筆` }));
+        return buildPieChart(segments, total);
       }
 
       function noData() {
@@ -1123,16 +1504,386 @@
       }
 
       // 舊訂單無 category 欄位時，從品項顯示名稱推算分類
+      function testNotification() {
+        if (Notification.permission === "default") {
+          Notification.requestPermission().then(p => { if (p === "granted") testNotification(); });
+          return;
+        }
+        if (Notification.permission === "denied") {
+          alert("通知權限被封鎖，請到瀏覽器設定 → 網站設定 → 通知，允許此網站");
+          return;
+        }
+        // 3 秒後跳通知，讓你有時間切到其他 App 測試
+        const btn = document.getElementById("testNotifyBtn");
+        btn.textContent = "3 秒後跳通知…";
+        btn.disabled = true;
+        setTimeout(() => {
+          sendSwNotification(1);
+          playOrderAlert();
+          btn.textContent = "🔔 測試通知";
+          btn.disabled = false;
+        }, 3000);
+      }
+
+      // ── Menu Admin ──
+      let menuAdminItems = [];
+      let menuAdminCat   = "";
+
+      document.querySelector('[data-tab="menu"]').addEventListener("click", loadMenuAdmin);
+
+      async function loadMenuAdmin() {
+        const statusEl = document.getElementById("menuAdminStatus");
+        statusEl.textContent = "載入中…";
+        try {
+          const snap = await db.collection("menu").orderBy("sortOrder").get();
+          if (snap.empty) {
+            menuAdminItems = DEFAULT_MENU.slice();
+            statusEl.textContent = "（顯示預設菜單，尚未寫入資料庫）";
+          } else {
+            menuAdminItems = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            statusEl.textContent = `共 ${menuAdminItems.length} 項`;
+          }
+        } catch (e) {
+          menuAdminItems = DEFAULT_MENU.slice();
+          statusEl.textContent = "載入失敗，顯示預設菜單";
+        }
+        if (!menuAdminCat && menuAdminItems.length > 0) {
+          menuAdminCat = menuAdminItems[0].category;
+        }
+        renderMenuAdmin();
+      }
+
+      function renderMenuAdmin() {
+        const cats = [...new Set(menuAdminItems.map(i => i.category))];
+        document.getElementById("menuCatTabs").innerHTML = cats.map(cat => `
+          <button class="menu-cat-btn${cat === menuAdminCat ? " active" : ""}"
+            onclick="setMenuAdminCat(this.dataset.cat)" data-cat="${cat.replace(/"/g,"&quot;")}">${cat}</button>
+        `).join("");
+
+        const items = menuAdminItems.filter(i => i.category === menuAdminCat);
+        const listEl = document.getElementById("menuAdminList");
+        if (items.length === 0) {
+          listEl.innerHTML = '<div class="empty-state">此分類無品項</div>';
+          return;
+        }
+        listEl.innerHTML = items.map(item => {
+          const avail = item.available !== false;
+          return `
+            <div class="menu-item-row${avail ? "" : " unavail"}">
+              <span class="menu-item-dot" style="background:${item.color || "#aaa"}"></span>
+              <span class="menu-item-name">${item.name}</span>
+              <span class="menu-item-price">${adminPriceLabel(item)}</span>
+              <div class="menu-item-actions">
+                <button class="btn-avail ${avail ? "on" : "off"}"
+                  onclick="toggleMenuAvail('${item.id}', ${!avail})">
+                  ${avail ? "供應中" : "已下架"}
+                </button>
+                <button class="btn-edit-mi" onclick="openMenuModal('${item.id}')">編輯</button>
+                <button class="btn-del-mi" onclick="deleteMenuAdmin('${item.id}')">刪除</button>
+              </div>
+            </div>`;
+        }).join("");
+      }
+
+      function adminPriceLabel(item) {
+        if (item.steps && item.steps.length > 0) {
+          const prices = item.steps.flatMap(s => (s.options || []).map(o => o.price)).filter(p => p != null);
+          if (!prices.length) return "";
+          const min = Math.min(...prices), max = Math.max(...prices);
+          return min === max ? `$${min}` : `$${min}~${max}`;
+        }
+        if (item.variants && item.variants.length > 0) {
+          const prices = item.variants.map(v => v.price);
+          const min = Math.min(...prices), max = Math.max(...prices);
+          return min === max ? `$${min}` : `$${min}~${max}`;
+        }
+        return item.price != null ? `$${item.price}` : "";
+      }
+
+      function setMenuAdminCat(cat) {
+        menuAdminCat = cat;
+        renderMenuAdmin();
+      }
+
+      async function toggleMenuAvail(id, makeAvailable) {
+        const idx = menuAdminItems.findIndex(i => i.id === id);
+        if (idx === -1) return;
+        menuAdminItems[idx].available = makeAvailable;
+        renderMenuAdmin();
+        try {
+          await db.collection("menu").doc(id).update({ available: makeAvailable });
+        } catch (e) {
+          menuAdminItems[idx].available = !makeAvailable;
+          renderMenuAdmin();
+          alert("操作失敗：" + e.message);
+        }
+      }
+
+      async function deleteMenuAdmin(id) {
+        const item = menuAdminItems.find(i => i.id === id);
+        if (!item) return;
+        if (!confirm(`確定要刪除「${item.name}」？此操作無法復原。`)) return;
+        menuAdminItems = menuAdminItems.filter(i => i.id !== id);
+        renderMenuAdmin();
+        try {
+          await db.collection("menu").doc(id).delete();
+          document.getElementById("menuAdminStatus").textContent = `已刪除「${item.name}」`;
+        } catch (e) {
+          alert("刪除失敗：" + e.message);
+          loadMenuAdmin();
+        }
+      }
+
+      async function seedMenuAdmin() {
+        if (!confirm("此操作將把所有預設菜單品項寫入資料庫（同 ID 品項會覆蓋），確定繼續？")) return;
+        const statusEl = document.getElementById("menuAdminStatus");
+        statusEl.textContent = "匯入中…";
+        try {
+          const batch = db.batch();
+          DEFAULT_MENU.forEach((item, idx) => {
+            const ref = db.collection("menu").doc(item.id);
+            batch.set(ref, { ...item, sortOrder: idx });
+          });
+          await batch.commit();
+          statusEl.textContent = "匯入完成！";
+          menuAdminCat = "";
+          loadMenuAdmin();
+        } catch (e) {
+          statusEl.textContent = "匯入失敗：" + e.message;
+        }
+      }
+
+      function openMenuModal(id) {
+        const existing = id ? menuAdminItems.find(i => i.id === id) : null;
+        const item = existing ? { ...existing } : {
+          id: "", name: "", category: menuAdminCat, color: "#888888", price: 0, available: true
+        };
+        const cats = [...new Set(menuAdminItems.map(i => i.category))];
+
+        let pType = "simple";
+        if (item.steps && item.steps.length > 0) pType = "steps";
+        else if (item.variants && item.variants.length > 0) pType = "variants";
+
+        const overlay = document.createElement("div");
+        overlay.className = "mm-overlay";
+        overlay.id = "mmOverlay";
+        overlay.innerHTML = buildModalHTML(item, pType, cats, id);
+        document.body.appendChild(overlay);
+
+        const catSel      = overlay.querySelector("#mmCat");
+        const newCatInput = overlay.querySelector("#mmNewCat");
+        catSel.addEventListener("change", () => {
+          newCatInput.classList.toggle("hidden", catSel.value !== "__new__");
+        });
+
+        overlay.querySelectorAll(".mm-ptype").forEach(radio => {
+          radio.addEventListener("change", () => {
+            const newType = overlay.querySelector(".mm-ptype:checked").value;
+            overlay.querySelector("#mmPriceBody").innerHTML = buildPriceHTML(item, newType);
+          });
+        });
+      }
+
+      function buildModalHTML(item, pType, cats, id) {
+        const catOptions = cats.map(c =>
+          `<option value="${c.replace(/"/g,"&quot;")}"${c === item.category ? " selected" : ""}>${c}</option>`
+        ).join("");
+
+        return `
+          <div class="mm-card">
+            <h3>${id ? "編輯品項" : "新增品項"}</h3>
+            <div class="mm-row">
+              <label>名稱</label>
+              <input type="text" id="mmName" value="${(item.name||"").replace(/"/g,"&quot;")}" placeholder="品項名稱" />
+            </div>
+            <div class="mm-row" style="flex-wrap:wrap;gap:6px;">
+              <label>分類</label>
+              <select id="mmCat">${catOptions}<option value="__new__">＋ 新分類</option></select>
+              <input type="text" id="mmNewCat" placeholder="新分類名稱" class="hidden"
+                style="flex:1;min-width:120px;padding:6px 9px;border:1.5px solid #ddd;border-radius:6px;font-size:0.84rem;font-family:inherit;outline:none;" />
+            </div>
+            <div class="mm-row">
+              <label>顏色</label>
+              <input type="color" id="mmColor" value="${item.color || "#888888"}" />
+              <span style="font-size:0.76rem;color:#aaa;margin-left:4px;">分類標示色</span>
+            </div>
+            <div class="mm-row">
+              <label>照片</label>
+              <input type="text" id="mmPhoto" value="${(item.photo||"").replace(/"/g,"&quot;")}" placeholder="圖片網址（選填）" />
+            </div>
+            <div class="mm-divider">價格設定</div>
+            <div class="mm-price-type">
+              <label><input type="radio" class="mm-ptype" name="mm-ptype" value="simple"${pType==="simple"?" checked":""}> 單一定價</label>
+              <label><input type="radio" class="mm-ptype" name="mm-ptype" value="variants"${pType==="variants"?" checked":""}> 規格選項</label>
+              <label><input type="radio" class="mm-ptype" name="mm-ptype" value="steps"${pType==="steps"?" checked":""}> 多步驟</label>
+            </div>
+            <div id="mmPriceBody" style="margin-top:10px;">${buildPriceHTML(item, pType)}</div>
+            <div class="mm-footer">
+              <button class="mm-cancel" onclick="closeMenuModal()">取消</button>
+              <button class="mm-save" onclick="saveMenuModal('${(id||"").replace(/'/g,"\\'")}')">儲存</button>
+            </div>
+          </div>`;
+      }
+
+      function buildPriceHTML(item, pType) {
+        if (pType === "variants") {
+          const rows = (item.variants || []).map(v => variantRowHTML(v.label, v.price)).join("");
+          return `
+            <div id="mmVariants">${rows || variantRowHTML("", "")}</div>
+            <button class="mm-add-row-btn" type="button" onclick="addVariantRow()">＋ 新增規格</button>`;
+        }
+        if (pType === "steps") {
+          const stepList = item.steps && item.steps.length
+            ? item.steps
+            : [{ label: "", options: [{ label: "", price: null }] }];
+          return stepList.map((step, si) => `
+            <div class="mm-step" id="mmStep${si}">
+              <div class="mm-step-label">
+                步驟 ${si + 1}
+                <input type="text" id="mmStepLabel${si}" placeholder="步驟名稱（如：尺寸）"
+                  value="${(step.label||"").replace(/"/g,"&quot;")}" />
+              </div>
+              <div id="mmStepOpts${si}">${(step.options||[]).map(opt => stepOptHTML(opt, si)).join("")}</div>
+              <button class="mm-add-row-btn" type="button" onclick="addStepOpt(${si})">＋ 新增選項</button>
+            </div>`).join("");
+        }
+        return `
+          <div class="mm-row">
+            <label>價格</label>
+            <input type="number" id="mmSimplePrice" value="${item.price || 0}" min="0" />
+            <span style="font-size:0.82rem;color:#888;">元</span>
+          </div>`;
+      }
+
+      function variantRowHTML(label, price) {
+        return `
+          <div class="mm-variant-row">
+            <input type="text" class="v-label" placeholder="規格名稱（如：吐司）"
+              value="${(label||"").replace(/"/g,"&quot;")}" />
+            <input type="number" class="v-price" placeholder="價格"
+              value="${price !== "" && price != null ? price : ""}" min="0" />
+            <button class="mm-remove-btn" type="button"
+              onclick="this.closest('.mm-variant-row').remove()">✕</button>
+          </div>`;
+      }
+
+      function stepOptHTML(opt, si) {
+        return `
+          <div class="mm-step-opt">
+            <input type="text" class="so-label" placeholder="選項名稱（如：中）"
+              value="${(opt.label||"").replace(/"/g,"&quot;")}" />
+            <input type="number" class="so-price" placeholder="價格"
+              value="${opt.price != null ? opt.price : ""}" min="0" />
+            <button class="mm-remove-btn" type="button"
+              onclick="this.closest('.mm-step-opt').remove()">✕</button>
+          </div>`;
+      }
+
+      function addVariantRow() {
+        const container = document.getElementById("mmVariants");
+        if (!container) return;
+        container.insertAdjacentHTML("beforeend", variantRowHTML("", ""));
+      }
+
+      function addStepOpt(si) {
+        const container = document.getElementById("mmStepOpts" + si);
+        if (!container) return;
+        container.insertAdjacentHTML("beforeend", stepOptHTML({ label: "", price: null }, si));
+      }
+
+      function closeMenuModal() {
+        const overlay = document.getElementById("mmOverlay");
+        if (overlay) overlay.remove();
+      }
+
+      async function saveMenuModal(id) {
+        const name = (document.getElementById("mmName")?.value || "").trim();
+        if (!name) { alert("請填寫品項名稱"); return; }
+
+        const catSel = document.getElementById("mmCat");
+        let category = catSel?.value || "";
+        if (category === "__new__") {
+          category = (document.getElementById("mmNewCat")?.value || "").trim();
+          if (!category) { alert("請填寫新分類名稱"); return; }
+        }
+
+        const color = document.getElementById("mmColor")?.value || "#888888";
+        const photo = (document.getElementById("mmPhoto")?.value || "").trim();
+        const pType = document.querySelector(".mm-ptype:checked")?.value || "simple";
+
+        const itemData = { name, category, color, available: true };
+        if (photo) itemData.photo = photo;
+
+        if (pType === "simple") {
+          itemData.price = parseInt(document.getElementById("mmSimplePrice")?.value) || 0;
+        } else if (pType === "variants") {
+          const variants = Array.from(document.querySelectorAll("#mmVariants .mm-variant-row"))
+            .map(row => ({
+              label: row.querySelector(".v-label")?.value.trim() || "",
+              price: parseInt(row.querySelector(".v-price")?.value) || 0,
+            })).filter(v => v.label);
+          if (!variants.length) { alert("請至少新增一個規格"); return; }
+          itemData.variants = variants;
+          itemData.price    = variants[0].price;
+        } else if (pType === "steps") {
+          const stepEls = document.querySelectorAll(".mm-step");
+          const steps = Array.from(stepEls).map((stepEl, si) => ({
+            label: stepEl.querySelector(`#mmStepLabel${si}`)?.value.trim() || "",
+            options: Array.from(stepEl.querySelectorAll(".mm-step-opt")).map(optEl => ({
+              label: optEl.querySelector(".so-label")?.value.trim() || "",
+              price: optEl.querySelector(".so-price")?.value !== ""
+                ? parseInt(optEl.querySelector(".so-price")?.value) : null,
+            })).filter(o => o.label),
+          })).filter(s => s.options.length > 0);
+          if (!steps.length) { alert("請至少新增一個步驟選項"); return; }
+          itemData.steps = steps;
+          itemData.price = steps[0]?.options[0]?.price ?? 0;
+        }
+
+        const docId = id || ("item-" + Date.now());
+        const existingIdx = menuAdminItems.findIndex(i => i.id === (id || docId));
+        itemData.sortOrder = existingIdx >= 0
+          ? (menuAdminItems[existingIdx].sortOrder ?? existingIdx)
+          : menuAdminItems.length;
+        itemData.id = id || docId;
+
+        try {
+          await db.collection("menu").doc(id || docId).set(itemData, { merge: true });
+          if (existingIdx >= 0) {
+            menuAdminItems[existingIdx] = { ...menuAdminItems[existingIdx], ...itemData };
+          } else {
+            menuAdminItems.push(itemData);
+            menuAdminCat = category;
+          }
+          closeMenuModal();
+          renderMenuAdmin();
+          document.getElementById("menuAdminStatus").textContent = `已儲存「${name}」`;
+        } catch (e) {
+          alert("儲存失敗：" + e.message);
+        }
+      }
+
       function inferCategory(displayName) {
         const m = displayName.match(/（([^（）]+)）$/);
         const variant  = m ? m[1] : null;
         const baseName = variant ? displayName.slice(0, displayName.lastIndexOf("（")) : displayName;
 
-        if (variant === "吐司" || variant === "漢堡") {
+        if (variant === "吐司" || variant === "漢堡" || variant === "丹麥" || variant === "年輪堡") {
           return baseName.includes("花生") ? "手工花生（含蛋）" : "初麵包（含蛋）";
         }
-        if (variant === "蛋餅" || variant === "墨西哥餅") return "初餅";
-        if (variant === "中"   || variant === "大")       return "初好茶";
+        if (variant === "貝果") return "手工花生（含蛋）";
+        if (variant === "蛋餅" || variant === "抓餅" || variant === "墨西哥餅") return "初餅";
+        if (variant === "中" || variant === "大" || /^[中大]・/.test(variant)) return "初好茶";
+        if (variant === "厚片" || variant === "丹麥（甜）") {
+          const sweetNames = ["煉乳", "草莓", "奶酥", "藍莓", "手工花生", "明太子"];
+          return sweetNames.some(n => baseName === n || baseName.startsWith(n)) ? "初點甜" : "初點甜";
+        }
+
+        const hotdogBunNames = ["德式熱狗堡", "燻香熱狗堡"];
+        if (hotdogBunNames.includes(baseName)) return "熱狗堡";
+
+        const noodleNames = ["蘑菇炒麵", "黑胡椒炒麵", "宮保雞丁炒麵", "意大利肉醬炒麵", "青醬炒麵"];
+        if (noodleNames.some(n => baseName === n || baseName.startsWith(n))) return "初炒麵";
 
         const sweetNames = ["煉乳", "草莓", "奶酥", "藍莓", "手工花生", "明太子"];
         if (sweetNames.some(n => baseName === n || baseName.startsWith(n))) return "初點甜";

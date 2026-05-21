@@ -1,99 +1,23 @@
-const menuItems = [
-  // ── 初麵包（含蛋）── variants: 吐司 / 漢堡
-  { id: "v-egg",               category: "初麵包（含蛋）", name: "菜多多（蛋奶素）",    variants: [{label:"吐司",price:35},{label:"漢堡",price:40}], price:35, color:"#4c8b55" },
-  { id: "pork-floss-egg",      category: "初麵包（含蛋）", name: "肉鬆蛋",             variants: [{label:"吐司",price:40},{label:"漢堡",price:45}], price:40, color:"#b87c4a" },
-  { id: "corn-egg",            category: "初麵包（含蛋）", name: "玉米蛋",             variants: [{label:"吐司",price:35},{label:"漢堡",price:40}], price:35, color:"#c8a020" },
-  { id: "ham-egg",             category: "初麵包（含蛋）", name: "火腿蛋",             variants: [{label:"吐司",price:35},{label:"漢堡",price:40}], price:35, color:"#c0392b" },
-  { id: "tuna-egg",            category: "初麵包（含蛋）", name: "鮪魚蛋",             variants: [{label:"吐司",price:40},{label:"漢堡",price:45}], price:40, color:"#315d8d" },
-  { id: "hotdog-egg",          category: "初麵包（含蛋）", name: "熱狗蛋",             variants: [{label:"吐司",price:40},{label:"漢堡",price:45}], price:40, color:"#a05030" },
-  { id: "chicken-egg",         category: "初麵包（含蛋）", name: "香雞蛋",             variants: [{label:"吐司",price:45},{label:"漢堡",price:50}], price:45, color:"#c8861a" },
-  { id: "bacon-egg",           category: "初麵包（含蛋）", name: "培根蛋",             variants: [{label:"吐司",price:40},{label:"漢堡",price:45}], price:40, color:"#8b3a2a" },
-  { id: "tender-ham-egg",      category: "初麵包（含蛋）", name: "嫩火腿蛋",           variants: [{label:"吐司",price:45},{label:"漢堡",price:50}], price:45, color:"#c0392b" },
-  { id: "smoked-chicken-egg",  category: "初麵包（含蛋）", name: "燻雞蛋",             variants: [{label:"吐司",price:45},{label:"漢堡",price:50}], price:45, color:"#7a4e2e" },
-  { id: "hash-cheese-egg",     category: "初麵包（含蛋）", name: "薯餅起司蛋",         variants: [{label:"吐司",price:55},{label:"漢堡",price:60}], price:55, color:"#c8861a" },
-  { id: "sausage-de",          category: "初麵包（含蛋）", name: "德式熱狗",           variants: [{label:"吐司",price:55},{label:"漢堡",price:60}], price:55, color:"#a05030" },
-  { id: "beef-toast",          category: "初麵包（含蛋）", name: "牛肉",               variants: [{label:"吐司",price:55},{label:"漢堡",price:60}], price:55, color:"#5b4636" },
-  { id: "pork-chop",           category: "初麵包（含蛋）", name: "手工豬排",           variants: [{label:"吐司",price:60},{label:"漢堡",price:65}], price:60, color:"#7a4e2e" },
-  { id: "korean-chicken",      category: "初麵包（含蛋）", name: "韓式炸雞",           variants: [{label:"吐司",price:70},{label:"漢堡",price:75}], price:70, color:"#c0392b", tag:true },
-  { id: "fried-pork",          category: "初麵包（含蛋）", name: "炸豬排",             variants: [{label:"吐司",price:70},{label:"漢堡",price:75}], price:70, color:"#8b3a2a" },
-  { id: "fried-chicken",       category: "初麵包（含蛋）", name: "炸雞排",             variants: [{label:"吐司",price:70},{label:"漢堡",price:75}], price:70, color:"#a05030" },
-  { id: "karaage",             category: "初麵包（含蛋）", name: "卡拉雞（原味/辣味）", variants: [{label:"吐司",price:75},{label:"漢堡",price:80}], price:75, color:"#c0392b" },
-  { id: "thick-beef",          category: "初麵包（含蛋）", name: "厚切牛肉",           variants: [{label:"吐司",price:85},{label:"漢堡",price:90}], price:85, color:"#3d2814", tag:true },
+// menuItems is loaded from Firestore; falls back to DEFAULT_MENU (from menu-data.js)
+let menuItems = DEFAULT_MENU.slice();
 
-  // ── 初餅 ── variants: 蛋餅 / 墨西哥餅
-  { id: "db-plain",            category: "初餅", name: "原味",               variants: [{label:"蛋餅",price:30},{label:"墨西哥餅",price:50}], price:30, color:"#c8861a" },
-  { id: "db-corn",             category: "初餅", name: "玉米",               variants: [{label:"蛋餅",price:35},{label:"墨西哥餅",price:55}], price:35, color:"#c8a020" },
-  { id: "db-pork-floss",       category: "初餅", name: "肉鬆",               variants: [{label:"蛋餅",price:40},{label:"墨西哥餅",price:60}], price:40, color:"#b87c4a" },
-  { id: "db-ham",              category: "初餅", name: "火腿",               variants: [{label:"蛋餅",price:35},{label:"墨西哥餅",price:55}], price:35, color:"#c0392b" },
-  { id: "db-veggie",           category: "初餅", name: "蔬菜",               variants: [{label:"蛋餅",price:40},{label:"墨西哥餅",price:60}], price:40, color:"#4c8b55" },
-  { id: "db-chicken",          category: "初餅", name: "香雞",               variants: [{label:"蛋餅",price:45},{label:"墨西哥餅",price:60}], price:45, color:"#c8861a" },
-  { id: "db-bacon",            category: "初餅", name: "培根",               variants: [{label:"蛋餅",price:40},{label:"墨西哥餅",price:60}], price:40, color:"#8b3a2a" },
-  { id: "db-hotdog",           category: "初餅", name: "熱狗",               variants: [{label:"蛋餅",price:40},{label:"墨西哥餅",price:60}], price:40, color:"#a05030" },
-  { id: "db-tuna-cheese",      category: "初餅", name: "鮪魚起司",           variants: [{label:"蛋餅",price:45},{label:"墨西哥餅",price:65}], price:45, color:"#315d8d" },
-  { id: "db-smoked-chicken",   category: "初餅", name: "燻雞",               variants: [{label:"蛋餅",price:45},{label:"墨西哥餅",price:65}], price:45, color:"#7a4e2e" },
-  { id: "db-bacon-cheese",     category: "初餅", name: "培根起司",           variants: [{label:"蛋餅",price:45},{label:"墨西哥餅",price:65}], price:45, color:"#8b3a2a" },
-  { id: "db-tender-ham",       category: "初餅", name: "嫩火腿",             variants: [{label:"蛋餅",price:45},{label:"墨西哥餅",price:65}], price:45, color:"#c0392b" },
-  { id: "db-hash-cheese",      category: "初餅", name: "薯餅起司",           variants: [{label:"蛋餅",price:55},{label:"墨西哥餅",price:70}], price:55, color:"#c8861a" },
-  { id: "db-beef",             category: "初餅", name: "牛肉",               variants: [{label:"蛋餅",price:55},{label:"墨西哥餅",price:70}], price:55, color:"#5b4636" },
-  { id: "db-pork-chop",        category: "初餅", name: "手工豬排",           variants: [{label:"蛋餅",price:60},{label:"墨西哥餅",price:80}], price:60, color:"#7a4e2e" },
-  { id: "db-sausage",          category: "初餅", name: "德式熱狗",           variants: [{label:"蛋餅",price:55},{label:"墨西哥餅",price:75}], price:55, color:"#a05030" },
-  { id: "db-karaage",          category: "初餅", name: "卡拉雞（原味/辣味）", variants: [{label:"蛋餅",price:75},{label:"墨西哥餅",price:95}], price:75, color:"#c0392b" },
-  { id: "db-korean-chicken",   category: "初餅", name: "韓式炸雞",           variants: [{label:"蛋餅",price:70},{label:"墨西哥餅",price:90}], price:70, color:"#c0392b", tag:true },
-  { id: "db-fried-pork",       category: "初餅", name: "炸豬排",             variants: [{label:"蛋餅",price:70},{label:"墨西哥餅",price:90}], price:70, color:"#8b3a2a" },
-  { id: "db-fried-chicken",    category: "初餅", name: "炸雞排",             variants: [{label:"蛋餅",price:70},{label:"墨西哥餅",price:90}], price:70, color:"#a05030" },
-  { id: "db-thick-beef",       category: "初餅", name: "厚切牛肉",           variants: [{label:"蛋餅",price:85},{label:"墨西哥餅",price:100}], price:85, color:"#3d2814", tag:true },
+// ── Firestore menu loader (runs after initial render) ──
+async function loadMenuFromFirestore() {
+  try {
+    const snap = await db.collection("menu").orderBy("sortOrder").get();
+    if (snap.empty) return;
+    const fsItems = snap.docs
+      .map(doc => ({ ...doc.data() }))
+      .filter(item => item.available !== false);
+    if (fsItems.length === 0) return;
+    menuItems = fsItems;
+    renderCategories();
+    renderMenu();
+  } catch (e) {
+    // keep DEFAULT_MENU
+  }
+}
 
-  // ── 手工花生（含蛋）── variants: 吐司 / 漢堡
-  { id: "pb-egg-salad",        category: "手工花生（含蛋）", name: "花生蛋沙拉",         variants: [{label:"吐司",price:55},{label:"漢堡",price:60}],  price:55,  color:"#c8861a" },
-  { id: "pb-ham-cheese",       category: "手工花生（含蛋）", name: "花生火腿起司",       variants: [{label:"吐司",price:55},{label:"漢堡",price:60}],  price:55,  color:"#c0392b" },
-  { id: "pb-bacon-cheese",     category: "手工花生（含蛋）", name: "花生培根起司",       variants: [{label:"吐司",price:60},{label:"漢堡",price:65}],  price:60,  color:"#8b3a2a" },
-  { id: "pb-smoked-cheese",    category: "手工花生（含蛋）", name: "花生燻雞起司",       variants: [{label:"吐司",price:65},{label:"漢堡",price:70}],  price:65,  color:"#7a4e2e" },
-  { id: "pb-pork-chop-cheese", category: "手工花生（含蛋）", name: "花生手工豬排起司",   variants: [{label:"吐司",price:80},{label:"漢堡",price:85}],  price:80,  color:"#5b4636", tag:true },
-  { id: "pb-beef-bacon-cheese",category: "手工花生（含蛋）", name: "花生牛肉培根起司",   variants: [{label:"吐司",price:90},{label:"漢堡",price:95}],  price:90,  color:"#3d2814" },
-  { id: "pb-thick-beef-cheese",category: "手工花生（含蛋）", name: "花生厚切牛肉起司",   variants: [{label:"吐司",price:110},{label:"漢堡",price:115}], price:110, color:"#2c1a0e" },
-  { id: "pb-karaage-hash",     category: "手工花生（含蛋）", name: "花生卡拉雞薯餅起司", variants: [{label:"吐司",price:115},{label:"漢堡",price:120}], price:115, color:"#c0392b", tag:true },
-
-  // ── 初點甜（吐司）── 無選項
-  { id: "sw-condensed-milk", category: "初點甜", name: "煉乳",     price: 25, color: "#e8d080" },
-  { id: "sw-strawberry",     category: "初點甜", name: "草莓",     price: 25, color: "#d44060" },
-  { id: "sw-milk-crisp",     category: "初點甜", name: "奶酥",     price: 30, color: "#e8c060" },
-  { id: "sw-blueberry",      category: "初點甜", name: "藍莓",     price: 30, color: "#6040a0" },
-  { id: "sw-peanut",         category: "初點甜", name: "手工花生", price: 35, color: "#c8861a", tag: true },
-  { id: "sw-mentaiko",       category: "初點甜", name: "明太子",   price: 30, color: "#e06040" },
-
-  // ── 初點心 ── 無選項
-  { id: "sn-hashbrown",       category: "初點心", name: "薯餅",             price: 25,  color: "#c8861a" },
-  { id: "sn-corn-egg",        category: "初點心", name: "玉米蛋",           price: 25,  color: "#c8a020" },
-  { id: "sn-sausage",         category: "初點心", name: "德式熱狗（一支）", price: 30,  color: "#a05030" },
-  { id: "sn-hemp-stick",      category: "初點心", name: "香麻棒",           price: 40,  color: "#b87c4a" },
-  { id: "sn-potato-chunks",   category: "初點心", name: "薯塊（4個）",      price: 40,  color: "#c8861a" },
-  { id: "sn-onion-rings",     category: "初點心", name: "洋蔥圈",           price: 40,  color: "#e8c060" },
-  { id: "sn-crispy-fries",    category: "初點心", name: "脆薯",             price: 42,  color: "#c8861a" },
-  { id: "sn-chicken-nuggets", category: "初點心", name: "雞塊",             price: 40,  color: "#c8861a" },
-  { id: "sn-chicken-balls",   category: "初點心", name: "雞球",             price: 40,  color: "#c8a020" },
-  { id: "sn-mini-hotdog",     category: "初點心", name: "小熱狗",           price: 25,  color: "#a05030" },
-  { id: "sn-hotdog-egg",      category: "初點心", name: "熱狗蛋",           price: 45,  color: "#a05030" },
-  { id: "sn-waffle-fries",    category: "初點心", name: "薯格格",           price: 50,  color: "#c8861a" },
-  { id: "sn-scallion-plain",  category: "初點心", name: "三星蔥餅（無蛋）", price: 45,  color: "#4c8b55" },
-  { id: "sn-scallion-egg",    category: "初點心", name: "三星蔥餅（加蛋）", price: 55,  color: "#4c8b55" },
-  { id: "sn-chicken-trio",    category: "初點心", name: "雞肉三兄弟",       description: "含雞球＋雞塊＋香麻棒",       price: 65,  color: "#c0392b", tag: true },
-  { id: "sn-potato-trio",     category: "初點心", name: "馬鈴薯三兄弟",     description: "含薯塊＋薯格格＋脆薯",       price: 65,  color: "#c8861a", tag: true },
-  { id: "sn-happy-platter",   category: "初點心", name: "歡樂大拼盤",       description: "含薯條＋雞塊＋雞球＋洋蔥圈", price: 100, color: "#c0392b", tag: true },
-
-  // ── 初好茶 ── variants: 中 / 大
-  { id: "tea-assam",      category: "初好茶", name: "阿薩姆紅茶",   description: "冰・溫",     variants: [{label:"中",price:15},{label:"大",price:20}], price:15, color:"#9d3f2d" },
-  { id: "tea-green",      category: "初好茶", name: "綠茶（無糖）", description: "冰・溫",     variants: [{label:"中",price:20},{label:"大",price:25}], price:20, color:"#4c8b55" },
-  { id: "tea-milk",       category: "初好茶", name: "奶茶",         description: "冰・溫",     variants: [{label:"中",price:25},{label:"大",price:30}], price:25, color:"#b87c4a" },
-  { id: "tea-green-milk", category: "初好茶", name: "奶綠",         description: "冰・溫",     variants: [{label:"中",price:25},{label:"大",price:30}], price:25, color:"#6a9a4c" },
-  { id: "tea-coffee",     category: "初好茶", name: "咖啡",         description: "冰・溫",     variants: [{label:"中",price:25},{label:"大",price:30}], price:25, color:"#5b4636" },
-  { id: "tea-thick-milk", category: "初好茶", name: "厚奶茶",       description: "冰・溫",     variants: [{label:"中",price:30},{label:"大",price:35}], price:30, color:"#8b6040" },
-  { id: "tea-yuanyang",   category: "初好茶", name: "鴛鴦",         description: "冰・溫",     variants: [{label:"中",price:30},{label:"大",price:35}], price:30, color:"#6b4030" },
-  { id: "tea-fresh-green",category: "初好茶", name: "鮮奶綠",       description: "冰・溫",     variants: [{label:"中",price:35},{label:"大",price:40}], price:35, color:"#5a8a40" },
-  { id: "tea-fresh-milk", category: "初好茶", name: "鮮奶茶",       description: "冰・溫",     variants: [{label:"中",price:30},{label:"大",price:40}], price:30, color:"#c8a070" },
-  { id: "tea-cranberry",  category: "初好茶", name: "蔓越莓醋",     description: "冰・涼",     variants: [{label:"中",price:35},{label:"大",price:45}], price:35, color:"#c0304a" },
-  { id: "tea-calpis",     category: "初好茶", name: "可爾必思",     description: "冰・溫",     variants: [{label:"中",price:35},{label:"大",price:40}], price:35, color:"#6080c0" },
-  { id: "tea-yuzu",       category: "初好茶", name: "柚子茶",       description: "冰・涼・溫", variants: [{label:"中",price:40},{label:"大",price:50}], price:40, color:"#c8a020" },
-];
 
 const state = {
   category: "全部",
@@ -120,10 +44,14 @@ const cartDrawerEl    = document.querySelector("#cartDrawer");
 const cartOverlayEl   = document.querySelector("#cartOverlay");
 const variantPickerEl = document.querySelector("#variantPicker");
 const variantOverlayEl= document.querySelector("#variantOverlay");
-const variantOptionsEl= document.querySelector("#variantOptions");
-const variantItemNameEl= document.querySelector("#variantItemName");
+const variantOptionsEl   = document.querySelector("#variantOptions");
+const variantItemNameEl  = document.querySelector("#variantItemName");
+const variantItemPhotoEl = document.querySelector("#variantItemPhoto");
+const variantItemPriceEl = document.querySelector("#variantItemPrice");
+const variantConfirmEl   = document.querySelector("#variantConfirm");
 
-let pendingItem = null;
+let pendingItem       = null;
+let pendingSelections = [];
 
 function formatPrice(v) {
   return currency.format(v);
@@ -131,27 +59,63 @@ function formatPrice(v) {
 
 // ── 選規格彈窗 ──
 
-function showVariantPicker(item) {
-  pendingItem = item;
-  variantItemNameEl.textContent = item.name;
-  variantOptionsEl.innerHTML = item.variants
-    .map(
-      (v) => `
+function renderVariantPicker() {
+  variantItemNameEl.textContent = pendingItem.name;
+  variantItemPhotoEl.innerHTML = pendingItem.photo
+    ? `<img src="${pendingItem.photo}" alt="${pendingItem.name}">`
+    : "";
+
+  if (pendingItem.steps) {
+    variantItemPriceEl.textContent = "";
+    variantOptionsEl.innerHTML = pendingItem.steps.map((step, stepIdx) => `
+      <div class="variant-group">
+        <p class="variant-group-label">${step.hint}</p>
+        <div class="variant-group-options">
+          ${step.options.map((opt) => {
+            const hasPrice = opt.price !== undefined;
+            return `<button class="variant-btn" data-step="${stepIdx}" data-label="${opt.label}" ${hasPrice ? `data-price="${opt.price}"` : ""} type="button">
+              <span class="variant-btn-label">${opt.label}</span>
+              ${hasPrice ? `<span class="variant-btn-price">${formatPrice(opt.price)}</span>` : ""}
+            </button>`;
+          }).join("")}
+        </div>
+      </div>`).join("");
+    pendingSelections = new Array(pendingItem.steps.length).fill(null);
+    variantConfirmEl.textContent = "確認加入";
+    variantConfirmEl.classList.remove("hidden");
+    variantConfirmEl.disabled = true;
+  } else if (pendingItem.variants && pendingItem.variants.length > 0) {
+    variantItemPriceEl.textContent = "";
+    variantOptionsEl.innerHTML = pendingItem.variants.map((v) => `
       <button class="variant-btn" data-label="${v.label}" data-price="${v.price}" type="button">
         <span class="variant-btn-label">${v.label}</span>
         <span class="variant-btn-price">${formatPrice(v.price)}</span>
-      </button>
-    `,
-    )
-    .join("");
+      </button>`).join("");
+    variantConfirmEl.classList.add("hidden");
+  } else {
+    variantItemPriceEl.textContent = formatPrice(pendingItem.price);
+    variantOptionsEl.innerHTML = "";
+    variantConfirmEl.textContent = "確認加入";
+    variantConfirmEl.classList.remove("hidden");
+    variantConfirmEl.disabled = false;
+  }
+}
+
+function showVariantPicker(item) {
+  pendingItem       = item;
+  pendingSelections = [];
+  renderVariantPicker();
   variantPickerEl.classList.add("open");
   variantOverlayEl.classList.add("visible");
 }
 
 function hideVariantPicker() {
-  pendingItem = null;
+  pendingItem       = null;
+  pendingSelections = [];
   variantPickerEl.classList.remove("open");
   variantOverlayEl.classList.remove("visible");
+  variantConfirmEl.classList.add("hidden");
+  variantConfirmEl.disabled = true;
 }
 
 // ── 菜單分類 ──
@@ -171,8 +135,11 @@ function renderCategories() {
 
 function menuItemHTML(item) {
   const hasVariants = item.variants && item.variants.length > 0;
+  const hasSteps    = item.steps    && item.steps.length    > 0;
   const displayPrice = hasVariants
     ? formatPrice(item.variants[0].price) + " 起"
+    : hasSteps
+    ? formatPrice(item.steps[0].options[0].price) + " 起"
     : formatPrice(item.price);
 
   return `
@@ -194,14 +161,15 @@ function menuItemHTML(item) {
 }
 
 const CATEGORY_HINTS = {
-  "初點甜": "吐司",
+  "棉花糖": "厚片",
+  "初好茶": "中・大　冰・溫・涼",
 };
 
 function sectionHeadingHTML(cat, items) {
   const variants = items[0]?.variants;
-  const hint = variants
+  const hint = CATEGORY_HINTS[cat] || (variants
     ? variants.map((v) => v.label).join("・")
-    : (CATEGORY_HINTS[cat] || null);
+    : null);
   return `
     <div class="section-header">
       <h3 class="section-heading">${cat}</h3>
@@ -313,23 +281,33 @@ function renderCart() {
       </div>
     `;
   } else {
-    cartListEl.innerHTML = rows
-      .map(
-        (r) => `
-          <div class="cart-item">
-            <div class="cart-title">
-              <strong>${r.displayName}</strong>
-              <span>${formatPrice(r.price)} × ${r.quantity}　小計 ${formatPrice(r.lineTotal)}</span>
-            </div>
-            <div class="qty-controls" aria-label="${r.displayName} 數量">
-              <button class="qty-button" data-dec="${r.key}" type="button">－</button>
-              <span class="qty">${r.quantity}</span>
-              <button class="qty-button" data-inc="${r.key}" type="button">＋</button>
-            </div>
+    const groups = new Map();
+    rows.forEach((r) => {
+      if (!groups.has(r.category)) groups.set(r.category, []);
+      groups.get(r.category).push(r);
+    });
+
+    cartListEl.innerHTML = [...groups.entries()]
+      .map(([cat, catRows]) => `
+        <div class="cart-category-group">
+          <p class="cart-category-label">${cat}</p>
+          <div class="cart-category-items">
+            ${catRows.map((r) => `
+              <div class="cart-item">
+                <div class="cart-title">
+                  <strong>${r.displayName}</strong>
+                  <span>${formatPrice(r.price)} × ${r.quantity}</span>
+                </div>
+                <div class="qty-controls" aria-label="${r.displayName} 數量">
+                  <button class="qty-button" data-dec="${r.key}" type="button">－</button>
+                  <span class="qty">${r.quantity}</span>
+                  <button class="qty-button" data-inc="${r.key}" type="button">＋</button>
+                </div>
+              </div>
+            `).join("")}
           </div>
-        `,
-      )
-      .join("");
+        </div>
+      `).join("");
   }
 
   const totals = calculateTotals();
@@ -339,7 +317,7 @@ function renderCart() {
 
 function generateTimeSlots() {
   const now     = new Date();
-  const minTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 6, 0); // 測試模式：開放全時段
+  const minTime = new Date(now.getTime() + 15 * 60 * 1000);
   const y = now.getFullYear(), mo = now.getMonth(), d = now.getDate();
   let   t   = new Date(y, mo, d, 6, 0);
   const end = new Date(y, mo, d, 13, 30);
@@ -401,6 +379,7 @@ async function checkout() {
   }
 
   let customer, phone = null;
+  const scheduled = document.querySelector("#scheduledTime")?.value || "";
 
   if (state.service === "內用") {
     const table = document.querySelector("#tableNumber").value.trim();
@@ -416,8 +395,7 @@ async function checkout() {
     phone    = ph;
   }
 
-  const note      = document.querySelector("#orderNote").value.trim() || "無";
-  const scheduled = document.querySelector("#scheduledTime")?.value || "";
+  const note = document.querySelector("#orderNote").value.trim() || "無";
   const totals = calculateTotals();
   const orderNumber = String(Date.now()).slice(-6);
 
@@ -481,17 +459,39 @@ menuListEl.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-add]");
   if (!btn) return;
   const item = menuItems.find((m) => m.id === btn.dataset.add);
-  if (item.variants && item.variants.length > 0) {
-    showVariantPicker(item);
-  } else {
-    addToCart(item.id, null, item.price);
-  }
+  showVariantPicker(item);
 });
 
 variantOptionsEl.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-label]");
   if (!btn || !pendingItem) return;
-  addToCart(pendingItem.id, btn.dataset.label, Number(btn.dataset.price));
+
+  if (pendingItem.steps) {
+    const stepIdx = Number(btn.dataset.step);
+    // 同組內取消其他選取
+    btn.closest(".variant-group-options").querySelectorAll(".variant-btn").forEach((b) => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    pendingSelections[stepIdx] = {
+      label: btn.dataset.label,
+      price: btn.dataset.price !== undefined ? Number(btn.dataset.price) : null,
+    };
+    variantConfirmEl.disabled = pendingSelections.some((s) => s === null);
+  } else {
+    addToCart(pendingItem.id, btn.dataset.label, Number(btn.dataset.price));
+    hideVariantPicker();
+  }
+});
+
+variantConfirmEl.addEventListener("click", () => {
+  if (!pendingItem) return;
+  if (pendingItem.steps) {
+    if (pendingSelections.some((s) => s === null)) return;
+    const combinedLabel = pendingSelections.map((s) => s.label).join("・");
+    const finalPrice    = pendingSelections.find((s) => s.price !== null)?.price ?? pendingItem.price;
+    addToCart(pendingItem.id, combinedLabel, finalPrice);
+  } else {
+    addToCart(pendingItem.id, null, pendingItem.price);
+  }
   hideVariantPicker();
 });
 
@@ -531,3 +531,4 @@ document.querySelector("#checkout").addEventListener("click", checkout);
 renderCategories();
 renderMenu();
 renderCart();
+loadMenuFromFirestore();

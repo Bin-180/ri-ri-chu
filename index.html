@@ -104,14 +104,18 @@
     <div class="variant-overlay" id="variantOverlay"></div>
     <div class="variant-picker" id="variantPicker" role="dialog" aria-modal="true">
       <div class="drawer-handle"></div>
+      <div class="variant-item-photo" id="variantItemPhoto"></div>
       <p class="variant-item-name" id="variantItemName"></p>
+      <p class="variant-item-price" id="variantItemPrice"></p>
       <div class="variant-options" id="variantOptions"></div>
+      <button class="variant-confirm hidden" id="variantConfirm" type="button" disabled>確認加入</button>
       <button class="variant-cancel" id="variantCancel" type="button">取消</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="menu-data.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
