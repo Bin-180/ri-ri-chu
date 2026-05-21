@@ -698,7 +698,22 @@ input::placeholder, textarea::placeholder {
   transform: translateX(-50%) translateY(0);
 }
 
-.variant-item-photo { display: none; }
+.variant-item-photo {
+  width: 100%;
+  height: 160px;
+  background: var(--board-3);
+  border-radius: 8px;
+  margin: 8px 0 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.variant-item-photo.hidden { display: none; }
+.variant-item-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
 .variant-item-name {
   font-size: 1rem;

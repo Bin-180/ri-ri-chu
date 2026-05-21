@@ -79,11 +79,21 @@ const WRAPPER_PHOTOS = {
 
 // ── 選規格彈窗 ──
 
+function showTopPhoto() {
+  if (pendingItem.photo) {
+    variantItemPhotoEl.innerHTML = `<img src="${pendingItem.photo}" alt="${pendingItem.name}" loading="lazy">`;
+    variantItemPhotoEl.classList.remove("hidden");
+  } else {
+    variantItemPhotoEl.innerHTML = "";
+    variantItemPhotoEl.classList.add("hidden");
+  }
+}
+
 function renderVariantPicker() {
   variantItemNameEl.textContent = pendingItem.name;
-  variantItemPhotoEl.innerHTML  = ""; // 頂部大圖已移除
 
   if (pendingItem.steps) {
+    showTopPhoto();
     variantItemPriceEl.textContent = "";
     variantOptionsEl.innerHTML = pendingItem.steps.map((step, stepIdx) => `
       <div class="variant-group">
@@ -106,6 +116,8 @@ function renderVariantPicker() {
     variantItemPriceEl.textContent = "";
     const usePhotoStyle = pendingItem.variants.some((v) => WRAPPER_PHOTOS[v.label]);
     if (usePhotoStyle) {
+      variantItemPhotoEl.innerHTML = "";
+      variantItemPhotoEl.classList.add("hidden");
       variantOptionsEl.innerHTML = pendingItem.variants.map((v) => {
         const photo = WRAPPER_PHOTOS[v.label];
         return `
@@ -118,6 +130,7 @@ function renderVariantPicker() {
           </button>`;
       }).join("");
     } else {
+      showTopPhoto();
       variantOptionsEl.innerHTML = `<div class="variant-group-options">${
         pendingItem.variants.map((v) => `
           <button class="variant-btn" data-label="${v.label}" data-price="${v.price}" type="button">
@@ -128,6 +141,7 @@ function renderVariantPicker() {
     }
     variantConfirmEl.classList.add("hidden");
   } else {
+    showTopPhoto();
     variantItemPriceEl.textContent = formatPrice(pendingItem.price);
     variantOptionsEl.innerHTML = "";
     variantConfirmEl.textContent = "確認加入";
