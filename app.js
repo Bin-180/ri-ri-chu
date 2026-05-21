@@ -64,13 +64,24 @@ function formatPrice(v) {
   return currency.format(v);
 }
 
+// 麵包 / 餅皮選項對應小圖（Pexels）
+const WRAPPER_PHOTOS = {
+  "吐司":    "https://images.pexels.com/photos/4939/pexels-photo-4939.jpeg?auto=compress&cs=tinysrgb&w=200",
+  "漢堡":    "https://images.pexels.com/photos/1893557/pexels-photo-1893557.jpeg?auto=compress&cs=tinysrgb&w=200",
+  "丹麥":    "https://images.pexels.com/photos/41298/pexels-photo-41298.jpeg?auto=compress&cs=tinysrgb&w=200",
+  "年輪堡":  "https://images.pexels.com/photos/4115196/pexels-photo-4115196.jpeg?auto=compress&cs=tinysrgb&w=200",
+  "貝果":    "https://images.pexels.com/photos/19745954/pexels-photo-19745954.jpeg?auto=compress&cs=tinysrgb&w=200",
+  "蛋餅":    "https://images.pexels.com/photos/25539503/pexels-photo-25539503.jpeg?auto=compress&cs=tinysrgb&w=200",
+  "抓餅":    "https://images.pexels.com/photos/24870672/pexels-photo-24870672.jpeg?auto=compress&cs=tinysrgb&w=200",
+  "墨西哥餅":"https://images.pexels.com/photos/4955219/pexels-photo-4955219.jpeg?auto=compress&cs=tinysrgb&w=200",
+  "厚片":    "https://images.pexels.com/photos/1070458/pexels-photo-1070458.jpeg?auto=compress&cs=tinysrgb&w=200",
+};
+
 // ── 選規格彈窗 ──
 
 function renderVariantPicker() {
   variantItemNameEl.textContent = pendingItem.name;
-  variantItemPhotoEl.innerHTML = pendingItem.photo
-    ? `<img src="${pendingItem.photo}" alt="${pendingItem.name}">`
-    : "";
+  variantItemPhotoEl.innerHTML  = ""; // 頂部大圖已移除
 
   if (pendingItem.steps) {
     variantItemPriceEl.textContent = "";
@@ -93,11 +104,17 @@ function renderVariantPicker() {
     variantConfirmEl.disabled = true;
   } else if (pendingItem.variants && pendingItem.variants.length > 0) {
     variantItemPriceEl.textContent = "";
-    variantOptionsEl.innerHTML = pendingItem.variants.map((v) => `
-      <button class="variant-btn" data-label="${v.label}" data-price="${v.price}" type="button">
-        <span class="variant-btn-label">${v.label}</span>
-        <span class="variant-btn-price">${formatPrice(v.price)}</span>
-      </button>`).join("");
+    variantOptionsEl.innerHTML = pendingItem.variants.map((v) => {
+      const photo = WRAPPER_PHOTOS[v.label];
+      return `
+        <button class="variant-btn" data-label="${v.label}" data-price="${v.price}" type="button">
+          ${photo ? `<img class="variant-btn-photo" src="${photo}" alt="${v.label}" loading="lazy">` : ""}
+          <span class="variant-btn-text">
+            <span class="variant-btn-label">${v.label}</span>
+            <span class="variant-btn-price">${formatPrice(v.price)}</span>
+          </span>
+        </button>`;
+    }).join("");
     variantConfirmEl.classList.add("hidden");
   } else {
     variantItemPriceEl.textContent = formatPrice(pendingItem.price);

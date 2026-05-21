@@ -698,22 +698,7 @@ input::placeholder, textarea::placeholder {
   transform: translateX(-50%) translateY(0);
 }
 
-.variant-item-photo {
-  width: 100%;
-  height: 160px;
-  background: var(--board-3);
-  border-radius: 8px;
-  margin: 8px 0 12px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.variant-item-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
+.variant-item-photo { display: none; }
 
 .variant-item-name {
   font-size: 1rem;
@@ -780,38 +765,67 @@ input::placeholder, textarea::placeholder {
 .variant-options {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 
+/* 通用按鈕基底 */
 .variant-btn {
-  flex: 1;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 12px 10px;
-  border: 1px solid var(--chalk-3);
-  border-radius: 4px;
+  border: 1.5px solid var(--chalk-3);
+  border-radius: 10px;
   background: var(--board);
   color: var(--chalk);
   cursor: pointer;
   transition: all 0.15s;
+  text-align: left;
 }
 
-.variant-btn:active {
-  border-color: var(--chalk-2);
+/* 直接子按鈕（麵包 / 餅皮選項）── 橫排左圖右字 */
+.variant-options > .variant-btn {
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+}
+
+/* Step chips（尺寸 / 溫度）── 直排置中文字 */
+.variant-group-options .variant-btn {
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 11px 8px;
+}
+
+.variant-btn:active  { border-color: var(--chalk-2); background: var(--board-3); }
+.variant-btn.selected{ border-color: var(--chalk);   background: var(--board-3); }
+
+/* 按鈕內縮圖 */
+.variant-btn-photo {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
   background: var(--board-3);
 }
 
+/* 按鈕內文字 */
+.variant-btn-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
 .variant-btn-label {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
 }
 
 .variant-btn-price {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--yellow);
 }
