@@ -1040,13 +1040,13 @@
       let statsPeriod      = "day";
       let prevOrderCount   = -1;   // -1 = initial load, don't alert yet
 
-      // ── Service Worker ──
+      // ── Service Worker：清除舊的 firebase-messaging-sw.js（會干擾 Firestore）──
       let swRegistration = null;
 
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./firebase-messaging-sw.js")
-          .then(reg => { swRegistration = reg; })
-          .catch(() => {});
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          regs.forEach(reg => reg.unregister());
+        });
       }
 
       // ── 防止螢幕休眠 ──
@@ -1121,19 +1121,12 @@
       // ── 新訂單通知 ──
       function sendSwNotification(count) {
         if (Notification.permission !== "granted") return;
-        // navigator.serviceWorker.controller 比 swRegistration.active 更可靠
-        const sw = navigator.serviceWorker?.controller;
-        if (sw) {
-          sw.postMessage({ type: "NEW_ORDER", count });
-        } else {
-          // SW 尚未接管頁面（首次載入）→ 直接用 Notification API
-          new Notification("🔔 日日初 — 新訂單", {
-            body: count > 1 ? `目前共有 ${count} 筆待處理訂單` : "有新的訂單進來了！",
-            icon: "logo.jpg",
-            tag:  "new-order",
-            requireInteraction: true,
-          });
-        }
+        new Notification("🔔 日日初 — 新訂單", {
+          body: count > 1 ? `目前共有 ${count} 筆待處理訂單` : "有新的訂單進來了！",
+          icon: "logo.jpg",
+          tag:  "new-order",
+          requireInteraction: true,
+        });
       }
 
       function notifyNewOrder(count) {
