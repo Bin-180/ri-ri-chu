@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>日日初 早餐點餐</title>
+    <title>點餐</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css" />
@@ -12,12 +12,12 @@
     <div class="sticky-header">
       <header class="topbar">
         <div class="brand">
-          <img class="brand-logo" src="logo.jpg" alt="日日初早午餐" />
+          <img class="brand-logo" id="brandLogo" src="" alt="" />
           <div class="brand-text">
-            <h1>日日初</h1>
-            <p>早餐・早午餐</p>
-            <p class="brand-info">雲林縣北港鎮華勝里民政路27號</p>
-            <p class="brand-info">05 773 0158　｜　06:00 – 13:30　｜　週四公休</p>
+            <h1 id="brandName"></h1>
+            <p id="brandSubtitle"></p>
+            <p class="brand-info" id="brandAddress"></p>
+            <p class="brand-info" id="brandInfo"></p>
           </div>
         </div>
       </header>
@@ -115,6 +115,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="store-config.js"></script>
     <script src="menu-data.js"></script>
     <script src="app.js"></script>
   </body>

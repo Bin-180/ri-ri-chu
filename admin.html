@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>日日初後台</title>
+    <title>後台</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet" />
     <style>
@@ -836,8 +836,8 @@
     <!-- ── Login screen ── -->
     <div id="loginScreen" class="login-screen">
       <div class="login-card">
-        <img src="logo.jpg" class="login-logo" alt="日日初" />
-        <h1>日日初後台</h1>
+        <img src="" class="login-logo" id="loginLogo" alt="" />
+        <h1 id="loginTitle"></h1>
         <p>請輸入員工帳號登入</p>
         <div id="loginError" class="login-error"></div>
         <label>電子信箱
@@ -855,8 +855,8 @@
 
       <header class="admin-header">
         <div class="admin-brand">
-          <img src="logo.jpg" class="admin-logo" alt="" />
-          日日初後台
+          <img src="" class="admin-logo" id="adminLogo" alt="" />
+          <span id="adminBrandName"></span>
         </div>
         <div class="header-right">
           <span id="adminEmail"></span>
@@ -966,8 +966,21 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="store-config.js"></script>
     <script src="menu-data.js"></script>
     <script>
+      // ── Store config ──
+      (function applyStoreConfig() {
+        const c = STORE_CONFIG;
+        const adminTitle = c.storeName + " 後台";
+        document.title = adminTitle;
+        document.getElementById("loginLogo").src   = c.logo;
+        document.getElementById("loginLogo").alt   = adminTitle;
+        document.getElementById("loginTitle").textContent      = adminTitle;
+        document.getElementById("adminLogo").src   = c.logo;
+        document.getElementById("adminBrandName").textContent  = adminTitle;
+      })();
+
       // ── Tab switching ──
       document.querySelectorAll(".tab-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -1149,9 +1162,9 @@
       // ── 新訂單通知 ──
       function sendSwNotification(count) {
         if (Notification.permission !== "granted") return;
-        new Notification("🔔 日日初 — 新訂單", {
+        new Notification(`🔔 ${STORE_CONFIG.storeName} — 新訂單`, {
           body: count > 1 ? `目前共有 ${count} 筆待處理訂單` : "有新的訂單進來了！",
-          icon: "logo.jpg",
+          icon: STORE_CONFIG.logo,
           tag:  "new-order",
           requireInteraction: true,
         });
@@ -1168,7 +1181,7 @@
       let flashInterval = null;
       function flashTitle(msg) {
         clearInterval(flashInterval);
-        const orig = "日日初後台";
+        const orig = STORE_CONFIG.storeName + " 後台";
         let show = true;
         flashInterval = setInterval(() => {
           document.title = show ? msg : orig;

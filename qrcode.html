@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>日日初 點餐 QR Code</title>
+  <title>點餐 QR Code</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -114,29 +114,39 @@
 </head>
 <body>
   <div class="card">
-    <img src="logo.jpg" class="logo" alt="日日初" />
-    <h1>日日初</h1>
-    <p class="subtitle">早餐・早午餐</p>
+    <img id="qrLogo" src="" class="logo" alt="" />
+    <h1 id="qrName"></h1>
+    <p class="subtitle" id="qrSubtitle"></p>
 
     <div class="divider"></div>
 
     <p class="scan-hint">掃描 QR Code 線上點餐</p>
 
     <div class="qr-wrap">
-      <img
-        src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=https://bin-180.github.io/ri-ri-chu/"
-        alt="點餐 QR Code"
-      />
+      <img id="qrCodeImg" src="" alt="點餐 QR Code" />
     </div>
 
-    <p class="url">https://bin-180.github.io/ri-ri-chu/</p>
+    <p class="url" id="qrUrl"></p>
 
-    <div class="info">
-      雲林縣北港鎮華勝里民政路27號<br />
-      05 773 0158
-    </div>
+    <div class="info" id="qrInfo"></div>
 
-    <div class="hours-badge">06:00 – 13:30　｜　週四公休</div>
+    <div class="hours-badge" id="qrHours"></div>
   </div>
+  <script src="store-config.js"></script>
+  <script>
+    (function() {
+      const c = STORE_CONFIG;
+      document.title = `${c.storeName} 點餐 QR Code`;
+      document.getElementById("qrLogo").src       = c.logo;
+      document.getElementById("qrLogo").alt       = c.storeName;
+      document.getElementById("qrName").textContent    = c.storeName;
+      document.getElementById("qrSubtitle").textContent = c.subtitle;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=${encodeURIComponent(c.orderUrl)}`;
+      document.getElementById("qrCodeImg").src    = qrUrl;
+      document.getElementById("qrUrl").textContent     = c.orderUrl;
+      document.getElementById("qrInfo").innerHTML      = `${c.address}<br />${c.phone}`;
+      document.getElementById("qrHours").textContent   = `${c.hours}　｜　${c.closedDay}`;
+    })();
+  </script>
 </body>
 </html>

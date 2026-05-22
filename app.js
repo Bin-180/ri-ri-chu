@@ -595,7 +595,25 @@ document.querySelector("#drawerClose").addEventListener("click", closeDrawer);
 cartOverlayEl.addEventListener("click", closeDrawer);
 document.querySelector("#checkout").addEventListener("click", checkout);
 
+// ── Store config ──
+
+function applyStoreConfig() {
+  const c = STORE_CONFIG;
+  document.title = `${c.storeName} 點餐`;
+  const logo = document.getElementById("brandLogo");
+  if (logo) { logo.src = c.logo; logo.alt = c.storeName; }
+  const name = document.getElementById("brandName");
+  if (name) name.textContent = c.storeName;
+  const sub = document.getElementById("brandSubtitle");
+  if (sub) sub.textContent = c.subtitle;
+  const addr = document.getElementById("brandAddress");
+  if (addr) addr.textContent = c.address;
+  const info = document.getElementById("brandInfo");
+  if (info) info.textContent = `${c.phone}　｜　${c.hours}　｜　${c.closedDay}`;
+}
+
 // ── Init ──
+applyStoreConfig();
 renderCategories();
 renderMenu();
 renderCart();
