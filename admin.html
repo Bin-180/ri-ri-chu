@@ -1001,7 +1001,7 @@
       };
 
       function applyRoleTabs(role) {
-        const allowed = ROLE_TABS[role] || ROLE_TABS["staff"];
+        const allowed = ROLE_TABS[role]; // role is pre-validated; no fallback
         document.querySelectorAll(".tab-btn").forEach(btn => {
           btn.style.display = allowed.includes(btn.dataset.tab) ? "" : "none";
         });
@@ -1031,13 +1031,24 @@
         try {
           const snap = await db.collection("users").doc(user.uid).get();
           if (!snap.exists) {
-            showLogin("此帳號未綁定任何店家，請聯絡管理員");
+            showLogin("此帳號未設定權限，請聯絡管理員");
             auth.signOut();
             return;
           }
           const profile = snap.data();
-          // storeId 優先用 profile，fallback 用 STORE_CONFIG
-          setActiveStoreId(profile.storeId || STORE_CONFIG.storeId);
+
+          if (!profile.storeId) {
+            showLogin("此帳號未綁定店家（缺少 storeId），請聯絡管理員");
+            auth.signOut();
+            return;
+          }
+          if (!ROLE_TABS[profile.role]) {
+            showLogin(`此帳號角色無效（role: "${profile.role || "未設定"}"），請聯絡管理員`);
+            auth.signOut();
+            return;
+          }
+
+          setActiveStoreId(profile.storeId); // 不 fallback，storeId 必須來自 profile
           showAdmin(user, profile);
         } catch (err) {
           showLogin("載入帳號資料失敗（" + err.message + "）");
@@ -1085,16 +1096,27 @@
       function showAdmin(user, profile) {
         document.getElementById("loginScreen").classList.add("hidden");
         document.getElementById("adminScreen").classList.remove("hidden");
-        // 顯示 displayName 若有，否則 email
         document.getElementById("adminEmail").textContent =
           profile.displayName ? `${profile.displayName}（${user.email}）` : user.email;
+
         applyRoleTabs(profile.role);
-        startListening(); // 最優先，確保訂單監聽不受後面任何錯誤影響
-        setDefaultDate("listDate",  listPeriod);
-        setDefaultDate("statsDate", statsPeriod);
-        loadOrderList();
-        loadStats();
-        try { document.getElementById("testNotifyBtn").style.display = ""; } catch (_) {}
+
+        // 依 role 決定載入哪些資料
+        startListening(); // 所有 role 都需要即時收單
+
+        const canManage = profile.role === "manager" || profile.role === "owner";
+        if (canManage) {
+          setDefaultDate("listDate",  listPeriod);
+          setDefaultDate("statsDate", statsPeriod);
+          loadOrderList();
+          loadStats();
+        }
+
+        // 測試通知按鈕只給 manager / owner
+        try {
+          document.getElementById("testNotifyBtn").style.display = canManage ? "" : "none";
+        } catch (_) {}
+
         try { startNoSleep(); } catch (_) {}
         try {
           if (Notification?.permission === "default") Notification.requestPermission();
