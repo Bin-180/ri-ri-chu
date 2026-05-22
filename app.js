@@ -66,9 +66,9 @@ function formatPrice(v) {
 
 // 麵包 / 餅皮選項對應小圖（Pexels）
 const WRAPPER_PHOTOS = {
-  "吐司":    "https://images.pexels.com/photos/4939/pexels-photo-4939.jpeg?auto=compress&cs=tinysrgb&w=200",
+  "吐司":    "https://images.pexels.com/photos/1448665/pexels-photo-1448665.jpeg?auto=compress&cs=tinysrgb&w=200",
   "漢堡":    "https://images.pexels.com/photos/1893557/pexels-photo-1893557.jpeg?auto=compress&cs=tinysrgb&w=200",
-  "丹麥":    "https://images.pexels.com/photos/41298/pexels-photo-41298.jpeg?auto=compress&cs=tinysrgb&w=200",
+  "丹麥":    "https://images.pexels.com/photos/3892469/pexels-photo-3892469.jpeg?auto=compress&cs=tinysrgb&w=200",
   "年輪堡":  "https://images.pexels.com/photos/4115196/pexels-photo-4115196.jpeg?auto=compress&cs=tinysrgb&w=200",
   "貝果":    "https://images.pexels.com/photos/19745954/pexels-photo-19745954.jpeg?auto=compress&cs=tinysrgb&w=200",
   "蛋餅":    "https://images.pexels.com/photos/25539503/pexels-photo-25539503.jpeg?auto=compress&cs=tinysrgb&w=200",

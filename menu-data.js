@@ -64,9 +64,9 @@ const DEFAULT_MENU = [
   { id: "sw-strawberry",     category: "初點甜", name: "草莓",     variants: [{label:"吐司",price:25},{label:"厚片",price:30},{label:"丹麥",price:35},{label:"貝果",price:40}], price:25, color:"#d44060", photo:"https://images.pexels.com/photos/236834/pexels-photo-236834.jpeg?auto=compress&cs=tinysrgb&w=400" },
   { id: "sw-chocolate",      category: "初點甜", name: "巧克力",   variants: [{label:"吐司",price:30},{label:"厚片",price:35},{label:"丹麥",price:40},{label:"貝果",price:45}], price:30, color:"#5b4636", photo:"https://images.pexels.com/photos/691168/pexels-photo-691168.jpeg?auto=compress&cs=tinysrgb&w=400" },
   { id: "sw-milk-crisp",     category: "初點甜", name: "奶酥",     variants: [{label:"吐司",price:30},{label:"厚片",price:35},{label:"丹麥",price:40},{label:"貝果",price:45}], price:30, color:"#e8c060", photo:"https://images.pexels.com/photos/4623075/pexels-photo-4623075.jpeg?auto=compress&cs=tinysrgb&w=400" },
-  { id: "sw-blueberry",      category: "初點甜", name: "藍莓",     variants: [{label:"吐司",price:30},{label:"厚片",price:35},{label:"丹麥",price:40},{label:"貝果",price:45}], price:30, color:"#6040a0", photo:"https://images.pexels.com/photos/1798849/pexels-photo-1798849.jpeg?auto=compress&cs=tinysrgb&w=400" },
+  { id: "sw-blueberry",      category: "初點甜", name: "藍莓",     variants: [{label:"吐司",price:30},{label:"厚片",price:35},{label:"丹麥",price:40},{label:"貝果",price:45}], price:30, color:"#6040a0", photo:"https://images.pexels.com/photos/1765022/pexels-photo-1765022.jpeg?auto=compress&cs=tinysrgb&w=400" },
   { id: "sw-peanut",         category: "初點甜", name: "手工花生", variants: [{label:"吐司",price:35},{label:"厚片",price:40},{label:"丹麥",price:45},{label:"貝果",price:50}], price:35, color:"#c8861a", tag:true, photo:"https://images.pexels.com/photos/6659695/pexels-photo-6659695.jpeg?auto=compress&cs=tinysrgb&w=400" },
-  { id: "sw-garlic",         category: "初點甜", name: "手工大蒜", variants: [{label:"吐司",price:30},{label:"厚片",price:35},{label:"丹麥",price:40},{label:"貝果",price:45}], price:30, color:"#c8a020", photo:"https://images.pexels.com/photos/4939/pexels-photo-4939.jpeg?auto=compress&cs=tinysrgb&w=400" },
+  { id: "sw-garlic",         category: "初點甜", name: "手工大蒜", variants: [{label:"吐司",price:30},{label:"厚片",price:35},{label:"丹麥",price:40},{label:"貝果",price:45}], price:30, color:"#c8a020", photo:"https://images.pexels.com/photos/1448665/pexels-photo-1448665.jpeg?auto=compress&cs=tinysrgb&w=400" },
   { id: "sw-mentaiko",       category: "初點甜", name: "明太子",   variants: [{label:"吐司",price:30},{label:"厚片",price:35}], price:30, color:"#e06040", photo:"https://images.pexels.com/photos/6036976/pexels-photo-6036976.jpeg?auto=compress&cs=tinysrgb&w=400" },
 
   // ── 棉花糖（厚片）── 無選項
@@ -104,7 +104,7 @@ const DEFAULT_MENU = [
   // ── 初炒麵 ── 無選項
   { id: "noodle-mushroom",  category: "初炒麵", name: "蘑菇炒麵",             price: 55, color: "#7a4e2e", photo:"https://images.pexels.com/photos/2347311/pexels-photo-2347311.jpeg?auto=compress&cs=tinysrgb&w=400" },
   { id: "noodle-pepper",    category: "初炒麵", name: "黑胡椒炒麵",           price: 55, color: "#3d2814", photo:"https://images.pexels.com/photos/5848494/pexels-photo-5848494.jpeg?auto=compress&cs=tinysrgb&w=400" },
-  { id: "noodle-kungpao",   category: "初炒麵", name: "宮保雞丁炒麵（有辣）", price: 70, color: "#c0392b", photo:"https://images.pexels.com/photos/34599523/pexels-photo-34599523.jpeg?auto=compress&cs=tinysrgb&w=400" },
+  { id: "noodle-kungpao",   category: "初炒麵", name: "宮保雞丁炒麵（有辣）", price: 70, color: "#c0392b", photo:"https://images.pexels.com/photos/5021719/pexels-photo-5021719.jpeg?auto=compress&cs=tinysrgb&w=400" },
   { id: "noodle-bolognese", category: "初炒麵", name: "意大利肉醬炒麵",       price: 70, color: "#8b3a2a", photo:"https://images.pexels.com/photos/724291/pexels-photo-724291.jpeg?auto=compress&cs=tinysrgb&w=400" },
   { id: "noodle-pesto",     category: "初炒麵", name: "青醬炒麵",             price: 70, color: "#4c8b55", tag:true, photo:"https://images.pexels.com/photos/5848494/pexels-photo-5848494.jpeg?auto=compress&cs=tinysrgb&w=400" },
 
