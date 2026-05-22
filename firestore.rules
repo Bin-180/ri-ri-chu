@@ -33,18 +33,35 @@ service cloud.firestore {
       return isSameStore(storeId) && profile().role == "owner";
     }
 
-    // 新訂單格式驗證（防止客人送出非 pending 狀態或缺少關鍵欄位）
+    // ── 訂單新增驗證 ──────────────────────────────────────────────────────
+    // 前台允許送出的欄位白名單（phone / scheduledTime 為選填）
     function isValidNewOrder() {
-      let d = request.resource.data;
+      let d    = request.resource.data;
+      let allowed = [
+        "orderNumber", "customer", "note", "service", "payment",
+        "items", "total", "status", "createdAt", "phone", "scheduledTime"
+      ];
       return d.status == "pending"
-          && d.keys().hasAll(["items", "total", "service"])
-          && d.total is number
+          && d.service in ["內用", "外帶"]
+          && d.total is number && d.total > 0
           && d.items is list
-          && d.items.size() > 0;
+          && d.items.size() > 0
+          && d.items.size() <= 50
+          && d.keys().hasOnly(allowed);
+    }
+
+    // ── 訂單狀態更新驗證 ──────────────────────────────────────────────────
+    // 只允許 pending → done，且只能異動 status 與 doneAt 兩個欄位
+    function isValidStatusUpdate() {
+      let before = resource.data;
+      let after  = request.resource.data;
+      return before.status == "pending"
+          && after.status  == "done"
+          // 異動的欄位集合只能是 status、doneAt
+          && after.diff(before).affectedKeys().hasOnly(["status", "doneAt"]);
     }
 
     // ── users/{uid} ──────────────────────────────────────────────────────
-    // 只有本人可以讀自己的 profile；寫入只透過 Admin SDK / Console
     match /users/{uid} {
       allow read:  if request.auth.uid == uid;
       allow write: if false;
@@ -57,28 +74,29 @@ service cloud.firestore {
     }
 
     // ── stores/{storeId}/menu ─────────────────────────────────────────────
-    // 菜單公開可讀（客人點餐時需要）；只有 owner 可以修改
     match /stores/{storeId}/menu/{itemId} {
-      allow read:   if true;
-      allow write:  if isOwner(storeId);
+      allow read:  if true;
+      allow write: if isOwner(storeId);
     }
 
     // ── stores/{storeId}/orders ───────────────────────────────────────────
     match /stores/{storeId}/orders/{orderId} {
-      // 未登入客人可以新增訂單（需通過格式驗證）
+      // 未登入客人可新增訂單（通過格式驗證）
       allow create: if isValidNewOrder();
 
-      // 任何該店員工可以讀取訂單（收單、查訂單明細、統計）
-      // 統計等進階功能由前端 role tab 限制；Rules 只強制跨店隔離
-      allow read:   if isStaff(storeId);
+      // staff：只能讀 pending 訂單（即時收單用）
+      //   - get：單筆讀取，直接檢查 resource.data.status
+      //   - list：query 讀取，Firestore Rules 要求 query 本身帶 status=="pending" 過濾條件才通過
+      // manager / owner：可讀全部訂單（查歷史、統計）
+      allow get:  if isManager(storeId)
+                  || (isStaff(storeId) && resource.data.status == "pending");
+      allow list: if isManager(storeId)
+                  || (isStaff(storeId) && resource.data.status == "pending");
 
-      // 改訂單狀態（pending → done）需要 manager 或以上
-      allow update: if isManager(storeId)
-                    // 不允許把已完成訂單改回 pending
-                    && !(resource.data.status == "done"
-                         && request.resource.data.status == "pending");
+      // pending → done，且只能改 status / doneAt
+      allow update: if isManager(storeId) && isValidStatusUpdate();
 
-      // 刪除訂單只有 owner
+      // 刪除只有 owner
       allow delete: if isOwner(storeId);
     }
   }
