@@ -20,12 +20,12 @@ service cloud.firestore {
 
     // 任何合法店家員工（staff / manager / owner）
     function isStaff(storeId) {
-      return isSameStore(storeId) && profile().role in ["staff", "manager", "owner"];
+      return isSameStore(storeId) && (profile().role in ["staff", "manager", "owner"]);
     }
 
     // manager 或以上
     function isManager(storeId) {
-      return isSameStore(storeId) && profile().role in ["manager", "owner"];
+      return isSameStore(storeId) && (profile().role in ["manager", "owner"]);
     }
 
     // owner 限定
@@ -42,7 +42,7 @@ service cloud.firestore {
         "items", "total", "status", "createdAt", "phone", "scheduledTime"
       ];
       return d.status == "pending"
-          && d.service in ["內用", "外帶"]
+          && (d.service in ["內用", "外帶"])
           && d.total is number && d.total > 0
           && d.items is list
           && d.items.size() > 0
