@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──────────────────────────────────────────────────
+
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // 讀取登入者的 users/{uid} profile（每次規則評估計一次 read）
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // 登入者的 storeId 必須與路徑中的 storeId 相同
+    function isSameStore(storeId) {
+      return isAuth() && profile().storeId == storeId;
+    }
+
+    // 任何合法店家員工（staff / manager / owner）
+    function isStaff(storeId) {
+      return isSameStore(storeId) && profile().role in ["staff", "manager", "owner"];
+    }
+
+    // manager 或以上
+    function isManager(storeId) {
+      return isSameStore(storeId) && profile().role in ["manager", "owner"];
+    }
+
+    // owner 限定
+    function isOwner(storeId) {
+      return isSameStore(storeId) && profile().role == "owner";
+    }
+
+    // 新訂單格式驗證（防止客人送出非 pending 狀態或缺少關鍵欄位）
+    function isValidNewOrder() {
+      let d = request.resource.data;
+      return d.status == "pending"
+          && d.keys().hasAll(["items", "total", "service"])
+          && d.total is number
+          && d.items is list
+          && d.items.size() > 0;
+    }
+
+    // ── users/{uid} ──────────────────────────────────────────────────────
+    // 只有本人可以讀自己的 profile；寫入只透過 Admin SDK / Console
+    match /users/{uid} {
+      allow read:  if request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // ── stores/{storeId} （店家設定文件）────────────────────────────────
+    match /stores/{storeId} {
+      allow read:  if isStaff(storeId);
+      allow write: if isOwner(storeId);
+    }
+
+    // ── stores/{storeId}/menu ─────────────────────────────────────────────
+    // 菜單公開可讀（客人點餐時需要）；只有 owner 可以修改
+    match /stores/{storeId}/menu/{itemId} {
+      allow read:   if true;
+      allow write:  if isOwner(storeId);
+    }
+
+    // ── stores/{storeId}/orders ───────────────────────────────────────────
+    match /stores/{storeId}/orders/{orderId} {
+      // 未登入客人可以新增訂單（需通過格式驗證）
+      allow create: if isValidNewOrder();
+
+      // 任何該店員工可以讀取訂單（收單、查訂單明細、統計）
+      // 統計等進階功能由前端 role tab 限制；Rules 只強制跨店隔離
+      allow read:   if isStaff(storeId);
+
+      // 改訂單狀態（pending → done）需要 manager 或以上
+      allow update: if isManager(storeId)
+                    // 不允許把已完成訂單改回 pending
+                    && !(resource.data.status == "done"
+                         && request.resource.data.status == "pending");
+
+      // 刪除訂單只有 owner
+      allow delete: if isOwner(storeId);
+    }
+  }
+}
