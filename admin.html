@@ -992,11 +992,58 @@
         });
       });
 
+      // ── 角色權限 ──
+      // 定義各角色可見的 tab（前端隱藏；Firestore Rules 做後端強制）
+      const ROLE_TABS = {
+        staff:   ["live"],
+        manager: ["live", "orderList", "stats"],
+        owner:   ["live", "orderList", "stats", "menu"],
+      };
+
+      function applyRoleTabs(role) {
+        const allowed = ROLE_TABS[role] || ROLE_TABS["staff"];
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+          btn.style.display = allowed.includes(btn.dataset.tab) ? "" : "none";
+        });
+        // 隱藏不允許的 tab 內容（防止直接存取 DOM）
+        document.querySelectorAll(".tab-content").forEach(el => {
+          const tabId = el.id.replace("Tab", "");
+          if (!allowed.includes(tabId)) el.classList.add("hidden");
+        });
+        // 切換到第一個允許的 tab
+        const firstTab = document.querySelector(`.tab-btn[data-tab="${allowed[0]}"]`);
+        if (firstTab) {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          firstTab.classList.add("active");
+          document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+          const firstContent = document.getElementById(allowed[0] + "Tab");
+          if (firstContent) firstContent.classList.remove("hidden");
+        }
+      }
+
       // ── Auth ──
       auth.onAuthStateChanged((user) => {
-        if (user) showAdmin(user);
-        else showLogin();
+        if (!user) { showLogin(); return; }
+        loadUserProfile(user);
       });
+
+      async function loadUserProfile(user) {
+        try {
+          const snap = await db.collection("users").doc(user.uid).get();
+          if (!snap.exists) {
+            showLogin("此帳號未綁定任何店家，請聯絡管理員");
+            auth.signOut();
+            return;
+          }
+          const profile = snap.data();
+          // storeId 優先用 profile，fallback 用 STORE_CONFIG
+          setActiveStoreId(profile.storeId || STORE_CONFIG.storeId);
+          showAdmin(user, profile);
+        } catch (err) {
+          showLogin("載入帳號資料失敗（" + err.message + "）");
+          auth.signOut();
+        }
+      }
 
       document.getElementById("loginBtn").addEventListener("click", async () => {
         const email    = document.getElementById("loginEmail").value.trim();
@@ -1029,15 +1076,19 @@
         auth.signOut();
       });
 
-      function showLogin() {
+      function showLogin(errorMsg) {
+        if (errorMsg) document.getElementById("loginError").textContent = errorMsg;
         document.getElementById("loginScreen").classList.remove("hidden");
         document.getElementById("adminScreen").classList.add("hidden");
       }
 
-      function showAdmin(user) {
+      function showAdmin(user, profile) {
         document.getElementById("loginScreen").classList.add("hidden");
         document.getElementById("adminScreen").classList.remove("hidden");
-        document.getElementById("adminEmail").textContent = user.email;
+        // 顯示 displayName 若有，否則 email
+        document.getElementById("adminEmail").textContent =
+          profile.displayName ? `${profile.displayName}（${user.email}）` : user.email;
+        applyRoleTabs(profile.role);
         startListening(); // 最優先，確保訂單監聽不受後面任何錯誤影響
         setDefaultDate("listDate",  listPeriod);
         setDefaultDate("statsDate", statsPeriod);

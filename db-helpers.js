@@ -1,8 +1,14 @@
 // 多店家 Firestore 路徑 helper
-// 所有 db.collection 呼叫都透過這裡，未來切換店家只需改 STORE_CONFIG.storeId
+// activeStoreId 由登入後 users/{uid}.storeId 決定；STORE_CONFIG.storeId 只作 fallback
+
+let activeStoreId = null;
+
+function setActiveStoreId(storeId) {
+  activeStoreId = storeId;
+}
 
 function getStoreId() {
-  return STORE_CONFIG.storeId;
+  return activeStoreId || STORE_CONFIG.storeId;
 }
 
 function storeDoc() {
