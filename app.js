@@ -4,7 +4,7 @@ let menuItems = DEFAULT_MENU.slice();
 // ── Firestore menu loader (runs after initial render) ──
 async function loadMenuFromFirestore() {
   try {
-    const snap = await db.collection("menu").orderBy("sortOrder").get();
+    const snap = await menuCollection().orderBy("sortOrder").get();
     if (snap.empty) return;
     const fsItems = snap.docs
       .map(doc => {
@@ -483,7 +483,7 @@ async function checkout() {
     if (phone)     orderData.phone          = phone;
     if (scheduled) orderData.scheduledTime  = scheduled;
 
-    await db.collection("orders").add(orderData);
+    await ordersCollection().add(orderData);
 
     showToast(`訂單 #${orderNumber} 已送出，應收 ${formatPrice(totals.total)}`);
     state.cart.clear();

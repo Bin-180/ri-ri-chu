@@ -967,6 +967,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
     <script src="store-config.js"></script>
+    <script src="db-helpers.js"></script>
     <script src="menu-data.js"></script>
     <script>
       // ── Store config ──
@@ -1193,7 +1194,7 @@
 
       function startListening() {
         if (unsubscribe) unsubscribe();
-        unsubscribe = db.collection("orders")
+        unsubscribe = ordersCollection()
           .where("status", "==", "pending")
           .onSnapshot((snapshot) => {
             const docs = snapshot.docs.slice().sort((a, b) => {
@@ -1296,7 +1297,7 @@
         const btn = document.querySelector(`#card-${id} .done-btn`);
         if (btn) { btn.disabled = true; btn.textContent = "處理中…"; }
         try {
-          await db.collection("orders").doc(id).update({
+          await ordersCollection().doc(id).update({
             status: "done",
             doneAt: firebase.firestore.FieldValue.serverTimestamp(),
           });
@@ -1356,7 +1357,7 @@
           start = new Date(y, m - 1, d, 0, 0, 0);
           end   = new Date(y, m - 1, d, 23, 59, 59);
         }
-        const snap = await db.collection("orders")
+        const snap = await ordersCollection()
           .where("createdAt", ">=", firebase.firestore.Timestamp.fromDate(start))
           .where("createdAt", "<=", firebase.firestore.Timestamp.fromDate(end))
           .orderBy("createdAt", "desc")
@@ -1572,7 +1573,7 @@
         const statusEl = document.getElementById("menuAdminStatus");
         statusEl.textContent = "載入中…";
         try {
-          const snap = await db.collection("menu").orderBy("sortOrder").get();
+          const snap = await menuCollection().orderBy("sortOrder").get();
           if (snap.empty) {
             menuAdminItems  = DEFAULT_MENU.slice();
             menuInFirestore = false;
@@ -1655,13 +1656,13 @@
             const batch = db.batch();
             menuAdminItems.forEach((item, i) => {
               const { id: itemId, ...data } = item;
-              batch.set(db.collection("menu").doc(itemId), { ...data, sortOrder: data.sortOrder ?? i });
+              batch.set(menuCollection().doc(itemId), { ...data, sortOrder: data.sortOrder ?? i });
             });
             await batch.commit();
             menuInFirestore = true;
             document.getElementById("menuAdminStatus").textContent = `共 ${menuAdminItems.length} 項`;
           } else {
-            await db.collection("menu").doc(id).update({ available: makeAvailable });
+            await menuCollection().doc(id).update({ available: makeAvailable });
           }
         } catch (e) {
           menuAdminItems[idx].available = !makeAvailable;
@@ -1682,12 +1683,12 @@
             const batch = db.batch();
             menuAdminItems.forEach((it, i) => {
               const { id: itemId, ...data } = it;
-              batch.set(db.collection("menu").doc(itemId), { ...data, sortOrder: data.sortOrder ?? i });
+              batch.set(menuCollection().doc(itemId), { ...data, sortOrder: data.sortOrder ?? i });
             });
             await batch.commit();
             menuInFirestore = true;
           } else {
-            await db.collection("menu").doc(id).delete();
+            await menuCollection().doc(id).delete();
           }
           document.getElementById("menuAdminStatus").textContent = `已刪除「${item.name}」`;
         } catch (e) {
@@ -1703,7 +1704,7 @@
         try {
           const batch = db.batch();
           DEFAULT_MENU.forEach((item, idx) => {
-            const ref = db.collection("menu").doc(item.id);
+            const ref = menuCollection().doc(item.id);
             batch.set(ref, { ...item, sortOrder: idx });
           });
           await batch.commit();
@@ -1910,7 +1911,7 @@
         itemData.id = id || docId;
 
         try {
-          await db.collection("menu").doc(id || docId).set(itemData, { merge: true });
+          await menuCollection().doc(id || docId).set(itemData, { merge: true });
           if (existingIdx >= 0) {
             menuAdminItems[existingIdx] = { ...menuAdminItems[existingIdx], ...itemData };
           } else {

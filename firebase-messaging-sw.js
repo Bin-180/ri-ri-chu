@@ -2,17 +2,19 @@
 self.addEventListener("message", (event) => {
   if (event.data?.type !== "NEW_ORDER") return;
 
-  const count = event.data.count || 1;
-  const body  = count > 1 ? `目前共有 ${count} 筆待處理訂單` : "有新的訂單進來了！";
+  const count     = event.data.count     || 1;
+  const storeName = event.data.storeName || "新訂單";
+  const logo      = event.data.logo      || "./logo.jpg";
+  const body      = count > 1 ? `目前共有 ${count} 筆待處理訂單` : "有新的訂單進來了！";
 
-  self.registration.showNotification("🔔 日日初 — 新訂單", {
+  self.registration.showNotification(`🔔 ${storeName} — 新訂單`, {
     body,
-    icon:             "./logo.jpg",
-    badge:            "./logo.jpg",
-    tag:              "new-order",   // 同 tag 的通知會合併覆蓋，不會堆疊
-    requireInteraction: true,        // 通知不自動消失，要手動關閉
-    vibrate:          [300, 150, 300, 150, 600],
-    data:             { url: self.location.href },
+    icon:               logo,
+    badge:              logo,
+    tag:                "new-order",   // 同 tag 的通知會合併覆蓋，不會堆疊
+    requireInteraction: true,          // 通知不自動消失，要手動關閉
+    vibrate:            [300, 150, 300, 150, 600],
+    data:               { url: self.location.href },
   });
 });
 
