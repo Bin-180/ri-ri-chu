@@ -14,6 +14,25 @@ const menuCtx = {};
 vm.runInNewContext(menuScript, menuCtx);
 const DEFAULT_MENU = menuCtx.DEFAULT_MENU;
 
+// ── Load custom menu file (--menuFile) ──
+// 若指定 --menuFile，從該檔案 require 菜單陣列，否則使用 DEFAULT_MENU
+function loadMenu(menuFilePath) {
+  if (!menuFilePath) return DEFAULT_MENU;
+  const abs = path.isAbsolute(menuFilePath)
+    ? menuFilePath
+    : path.join(process.cwd(), menuFilePath);
+  if (!fs.existsSync(abs)) {
+    console.error(`找不到菜單檔：${abs}`);
+    process.exit(1);
+  }
+  const menu = require(abs);
+  if (!Array.isArray(menu)) {
+    console.error(`菜單檔必須 export 一個陣列：${abs}`);
+    process.exit(1);
+  }
+  return menu;
+}
+
 // ── Arg parser ──
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -31,19 +50,20 @@ function usage() {
   console.log(`
 使用方式：
   node scripts/setup-store.js \\
-    --storeId          <id>      \\
-    --storeName        <名稱>    \\
-    --ownerEmail       <email>   \\
-    --ownerPassword    <密碼>    \\
-    --ownerDisplayName <顯示名稱> \\
-    --subtitle         <副標題>  \\
-    --address          <地址>    \\
-    --phone            <電話>    \\
-    --hours            <營業時間> \\
-    --closedDay        <公休說明> \\
-    [--force]          強制覆蓋已存在的 storeId
+    --storeId          <id>        \\
+    --storeName        <名稱>      \\
+    --ownerEmail       <email>     \\
+    --ownerPassword    <密碼>      \\
+    --ownerDisplayName <顯示名稱>  \\
+    --subtitle         <副標題>    \\
+    --address          <地址>      \\
+    --phone            <電話>      \\
+    --hours            <營業時間>  \\
+    --closedDay        <公休說明>  \\
+    [--menuFile  <路徑>]  指定菜單檔（預設使用 menu-data.js 的 DEFAULT_MENU）\\
+    [--force]            強制覆蓋已存在的 storeId
 
-範例：
+範例（使用預設 DEFAULT_MENU）：
   node scripts/setup-store.js \\
     --storeId        demo \\
     --storeName      "Demo 早餐" \\
@@ -55,6 +75,15 @@ function usage() {
     --phone          "02 1234 5678" \\
     --hours          "07:00 - 14:00" \\
     --closedDay      "週一公休"
+
+範例（指定自訂菜單檔）：
+  node scripts/setup-store.js \\
+    --storeId        laojie_wangguo \\
+    --storeName      "老街碗粿" \\
+    --ownerEmail     owner@example.com \\
+    --ownerPassword  "..." \\
+    --ownerDisplayName "老街老闆" \\
+    --menuFile       scripts/menu-laojie-wangguo.js
 `);
   process.exit(1);
 }
@@ -91,8 +120,12 @@ async function run() {
     phone      = "",
     hours      = "",
     closedDay  = "",
+    menuFile   = null,
     force      = false,
   } = args;
+
+  const MENU = loadMenu(menuFile);
+  console.log(`✔  菜單來源：${menuFile || "menu-data.js (DEFAULT_MENU)"}（${MENU.length} 筆）`);
 
   // 1. 防呆：storeId 已存在
   const storeRef  = db.collection("stores").doc(storeId);
@@ -148,16 +181,18 @@ async function run() {
   console.log(`✔  users/${ownerUid} 寫入完成 (role: owner)`);
 
   // 5. 寫入 stores/{storeId}/menu（batch，每次最多 400 筆）
-  const menuRef   = storeRef.collection("menu");
-  const CHUNK     = 400;
-  for (let i = 0; i < DEFAULT_MENU.length; i += CHUNK) {
+  const menuRef = storeRef.collection("menu");
+  const CHUNK   = 400;
+  for (let i = 0; i < MENU.length; i += CHUNK) {
     const batch = db.batch();
-    DEFAULT_MENU.slice(i, i + CHUNK).forEach((item, idx) => {
-      batch.set(menuRef.doc(item.id), { ...item, sortOrder: i + idx });
+    MENU.slice(i, i + CHUNK).forEach((item, idx) => {
+      // 若 item 已有 sortOrder，保留之；否則自動補順序值
+      const sortOrder = item.sortOrder != null ? item.sortOrder : (i + idx);
+      batch.set(menuRef.doc(item.id), { ...item, sortOrder });
     });
     await batch.commit();
   }
-  console.log(`✔  stores/${storeId}/menu 寫入完成（${DEFAULT_MENU.length} 筆）`);
+  console.log(`✔  stores/${storeId}/menu 寫入完成（${MENU.length} 筆）`);
 
   console.log(`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -166,7 +201,7 @@ async function run() {
   storeName  : ${storeName}
   owner      : ${ownerEmail}
   ownerUid   : ${ownerUid}
-  menu items : ${DEFAULT_MENU.length}
+  menu items : ${MENU.length}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `);
   process.exit(0);
