@@ -1404,6 +1404,7 @@
           <div class="settings-row"><label>電話</label><input type="text" id="setPhone" /></div>
           <div class="settings-row"><label>營業時間</label><input type="text" id="setHours" /></div>
           <div class="settings-row"><label>公休說明</label><input type="text" id="setClosedDay" /></div>
+          <div class="settings-row"><label>個資聯絡 Email</label><input type="email" id="storeContactEmail" placeholder="privacy@example.com" /></div>
         </div>
 
         <div class="settings-section">
@@ -2778,7 +2779,8 @@
           document.getElementById("setAddress").value    = d.address    || "";
           document.getElementById("setPhone").value      = d.phone      || "";
           document.getElementById("setHours").value      = d.hours      || "";
-          document.getElementById("setClosedDay").value  = d.closedDay  || "";
+          document.getElementById("setClosedDay").value        = d.closedDay     || "";
+          document.getElementById("storeContactEmail").value = d.contactEmail  || "";
           const primary = d.theme?.primary || "#1a2535";
           const accent  = d.theme?.accent  || "#c8861a";
           document.getElementById("setThemePrimary").value    = primary;
@@ -2810,7 +2812,8 @@
             address:   document.getElementById("setAddress").value.trim(),
             phone:     document.getElementById("setPhone").value.trim(),
             hours:     document.getElementById("setHours").value.trim(),
-            closedDay: document.getElementById("setClosedDay").value.trim(),
+            closedDay:    document.getElementById("setClosedDay").value.trim(),
+            contactEmail: document.getElementById("storeContactEmail").value.trim(),
             theme:     { primary, accent },
             logo:      logoUrl,
           };

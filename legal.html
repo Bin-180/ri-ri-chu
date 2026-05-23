@@ -329,12 +329,23 @@
             });
           }
 
+          function esc(s) {
+            return String(s == null ? "" : s)
+              .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+          }
+
           const parts = [];
-          if (d.phone)   parts.push("電話：" + d.phone);
-          if (d.address) parts.push("地址：" + d.address);
+          const emailRaw = String(d.contactEmail || "").trim();
+          if (emailRaw) {
+            const safeEmailText = esc(emailRaw);
+            const safeEmailHref = "mailto:" + encodeURIComponent(emailRaw);
+            parts.push('個資聯絡：<a href="' + safeEmailHref + '">' + safeEmailText + '</a>');
+          }
+          if (d.phone)   parts.push("電話：" + esc(d.phone));
+          if (d.address) parts.push("地址：" + esc(d.address));
           if (parts.length) {
-            document.getElementById("storeContact").innerHTML =
-              parts.map(function (s) { return s; }).join("<br>");
+            document.getElementById("storeContact").innerHTML = parts.join("<br>");
           }
         } catch (_) {}
       })();
