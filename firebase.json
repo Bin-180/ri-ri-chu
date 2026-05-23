@@ -35,7 +35,9 @@
       "docs/NEW_STORE_SETUP.md",
       "docs/DEPLOYMENT.md",
       "CHANGELOG.md",
-      "RELEASE_CHECKLIST.md"
+      "RELEASE_CHECKLIST.md",
+      "ROADMAP.md",
+      "docs/LEGAL_DRAFTS.md"
     ]
   }
 }
