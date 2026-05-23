@@ -1067,6 +1067,71 @@
       .mm-cancel { background: #f5f5f5; border: 1.5px solid #ddd; color: #555; }
       .mm-save   { background: #1a2535; border: none; color: #fff; font-weight: 600; }
 
+      /* ── Quick Stock Panel (live tab) ── */
+      .stock-panel {
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 14px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      }
+      .stock-panel-hd {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 26px;
+      }
+      .stock-panel-title {
+        flex: 1;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #555;
+        letter-spacing: 0.02em;
+      }
+      .stock-expand-btn {
+        padding: 3px 12px;
+        border: 1.5px solid #d0d0d0;
+        border-radius: 5px;
+        background: #fafafa;
+        font-size: 0.78rem;
+        cursor: pointer;
+        color: #666;
+        white-space: nowrap;
+      }
+      .stock-expand-btn:hover { background: #f0f0f0; }
+      .stock-list-inner { margin-top: 8px; }
+      .stock-cat-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #aaa;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        margin: 10px 0 3px;
+      }
+      .stock-cat-label:first-child { margin-top: 4px; }
+      .stock-item-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 2px;
+        border-bottom: 1px solid #f5f5f5;
+      }
+      .stock-item-row:last-child { border-bottom: none; }
+      .stock-item-name { flex: 1; font-size: 0.84rem; color: #333; }
+      .stock-item-name.soldout { color: #bbb; text-decoration: line-through; }
+      .stock-avail-btn {
+        padding: 3px 10px;
+        border-radius: 10px;
+        border: 1.5px solid;
+        font-size: 0.72rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .stock-avail-btn:disabled { opacity: 0.4; cursor: default; }
+      .stock-avail-btn.available { border-color: #4a7c59; color: #4a7c59; background: #f0f8f4; }
+      .stock-avail-btn.soldout   { border-color: #c0392b; color: #c0392b; background: #fdf0f0; }
+
       /* ── Pause Panel (live tab) ── */
       .pause-panel {
         background: #f0faf4;
@@ -1188,6 +1253,16 @@
             <button class="pause-save-btn" onclick="savePauseMessage()">儲存訊息</button>
           </div>
         </div>
+
+        <!-- 缺貨管理快速切換（manager/owner 可見） -->
+        <div id="stockPanel" class="stock-panel hidden">
+          <div class="stock-panel-hd">
+            <span class="stock-panel-title">缺貨管理</span>
+            <button class="stock-expand-btn" id="stockExpandBtn" onclick="toggleStockPanel()">展開</button>
+          </div>
+          <div id="stockListInner" class="stock-list-inner hidden"></div>
+        </div>
+
         <div id="liveOrders" class="orders-grid">
           <div class="empty-state">目前無待處理訂單</div>
         </div>
@@ -1530,7 +1605,9 @@
 
         const canManage = profile.role === "manager" || profile.role === "owner";
         canManagePause = canManage;
+        canManageStock = canManage;
         loadPauseState();
+        if (canManage) loadStockPanel();
 
         if (canManage) {
           setDefaultDate("listDate",  listPeriod);
@@ -1562,6 +1639,9 @@
       let statsPeriod      = "day";
       let prevOrderCount   = -1;   // -1 = initial load, don't alert yet
       let canManagePause   = false;
+      let canManageStock   = false;
+      let stockItems       = [];
+      let stockExpanded    = false;
 
       // ── Service Worker：只清除舊的 firebase-messaging-sw.js，保留 PWA sw.js ──
       let swRegistration = null;
@@ -2962,6 +3042,73 @@
                "<div class=\"health-msg\">" + r.msg + "</div>" + hintHtml + "</div></div>";
           return h;
         }).join("");
+      }
+
+      // ── Quick Stock ──
+      async function loadStockPanel() {
+        try {
+          const snap = await menuCollection().orderBy("sortOrder").get();
+          stockItems = snap.empty ? [] : snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          if (stockItems.length > 0) {
+            renderStockList();
+            document.getElementById("stockPanel").classList.remove("hidden");
+          }
+        } catch (err) {
+          console.error("loadStockPanel:", err);
+        }
+      }
+
+      function renderStockList() {
+        const inner = document.getElementById("stockListInner");
+        if (!inner) return;
+        if (stockItems.length === 0) {
+          inner.innerHTML = '<div style="font-size:0.82rem;color:#bbb;padding:6px 0;">菜單無品項</div>';
+          return;
+        }
+        const groups = new Map();
+        stockItems.forEach(item => {
+          if (!groups.has(item.category)) groups.set(item.category, []);
+          groups.get(item.category).push(item);
+        });
+        inner.innerHTML = [...groups.entries()].map(([cat, items]) => `
+          <p class="stock-cat-label">${cat}</p>
+          ${items.map(item => {
+            const avail = item.available !== false;
+            return `<div class="stock-item-row">
+              <span class="stock-item-name${avail ? "" : " soldout"}">${item.name}</span>
+              <button class="stock-avail-btn ${avail ? "available" : "soldout"}"
+                id="stock-btn-${item.id}"
+                onclick="toggleItemAvail('${item.id}',${avail})">
+                ${avail ? "供應中" : "售完"}
+              </button>
+            </div>`;
+          }).join("")}
+        `).join("");
+      }
+
+      function toggleStockPanel() {
+        stockExpanded = !stockExpanded;
+        const inner = document.getElementById("stockListInner");
+        const btn   = document.getElementById("stockExpandBtn");
+        if (inner) inner.classList.toggle("hidden", !stockExpanded);
+        if (btn)   btn.textContent = stockExpanded ? "收合" : "展開";
+      }
+
+      async function toggleItemAvail(itemId, currentlyAvailable) {
+        const btn = document.getElementById("stock-btn-" + itemId);
+        if (btn) btn.disabled = true;
+        const newAvail = !currentlyAvailable;
+        try {
+          await menuCollection().doc(itemId).update({ available: newAvail });
+          const idx = stockItems.findIndex(i => i.id === itemId);
+          if (idx !== -1) stockItems[idx].available = newAvail;
+          renderStockList();
+          // renderStockList rebuilds innerHTML; restore expand state
+          if (!stockExpanded) document.getElementById("stockListInner")?.classList.add("hidden");
+        } catch (err) {
+          alert("操作失敗：" + err.message);
+          if (btn) btn.disabled = false;
+        }
       }
 
       // ── Pause / Accept Orders ──

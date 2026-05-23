@@ -112,9 +112,10 @@ service cloud.firestore {
       allow list:   if false;
       allow create: if isOwner(storeId);
       allow delete: if isOwner(storeId);
-      // owner: full update; manager: only acceptingOrders / pauseMessage
+      // owner: full update; manager: only acceptingOrders / pauseMessage (must actually change)
       allow update: if isOwner(storeId) ||
           (isManager(storeId) &&
+           request.resource.data.diff(resource.data).affectedKeys().size() > 0 &&
            request.resource.data.diff(resource.data).affectedKeys()
              .hasOnly(["acceptingOrders", "pauseMessage"]));
     }
@@ -125,8 +126,15 @@ service cloud.firestore {
     }
 
     match /stores/{storeId}/menu/{itemId} {
-      allow read:  if true;
-      allow write: if isOwner(storeId);
+      allow read:   if true;
+      allow create: if isOwner(storeId);
+      allow delete: if isOwner(storeId);
+      // owner: full update; manager: only available field (must actually change)
+      allow update: if isOwner(storeId) ||
+          (isManager(storeId) &&
+           request.resource.data.diff(resource.data).affectedKeys().size() > 0 &&
+           request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(["available"]));
     }
 
     match /stores/{storeId}/orders/{orderId} {
