@@ -676,6 +676,25 @@ input::placeholder, textarea::placeholder {
 
 .checkout-button:active { opacity: 0.85; }
 
+.legal-consent {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--chalk-2);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.legal-consent a {
+  color: var(--chalk-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.legal-consent a:hover,
+.legal-consent a:active {
+  color: var(--chalk);
+}
+
 /* ── Variant overlay ── */
 .variant-overlay {
   position: fixed;

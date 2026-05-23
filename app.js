@@ -659,4 +659,8 @@ storeReady.then(function () {
   renderMenu();
   renderCart();
   loadMenuFromFirestore();
+  const legalLink = document.getElementById("legalLink");
+  if (legalLink && STORE_CONFIG.storeId) {
+    legalLink.href = "/legal.html?store=" + STORE_CONFIG.storeId;
+  }
 });
