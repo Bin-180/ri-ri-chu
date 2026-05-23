@@ -153,6 +153,19 @@ button, input, textarea { font: inherit; }
   font-weight: 600;
 }
 
+/* ── Pause notice ── */
+.pause-notice {
+  background: #fff3e0;
+  border: 1.5px solid #ffb74d;
+  border-radius: 8px;
+  margin: 14px 20px 0;
+  padding: 14px 18px;
+  text-align: center;
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: #c84b00;
+}
+
 /* ── Menu main ── */
 .menu-main {
   padding: 12px 20px 120px;

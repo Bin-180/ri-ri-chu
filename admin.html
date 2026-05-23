@@ -1067,6 +1067,65 @@
       .mm-cancel { background: #f5f5f5; border: 1.5px solid #ddd; color: #555; }
       .mm-save   { background: #1a2535; border: none; color: #fff; font-weight: 600; }
 
+      /* ── Pause Panel (live tab) ── */
+      .pause-panel {
+        background: #f0faf4;
+        border-left: 4px solid #2e7d32;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 14px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .pause-panel.paused { background: #fff8f0; border-left-color: #c84b00; }
+      .pause-status-bar { display: flex; align-items: center; gap: 10px; }
+      .pause-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+      .pause-dot.accepting { background: #2e7d32; }
+      .pause-dot.paused    { background: #c84b00; }
+      .pause-status-label  { flex: 1; font-size: 0.88rem; font-weight: 600; color: #222; }
+      .pause-toggle-btn {
+        padding: 6px 16px;
+        border-radius: 6px;
+        border: 1.5px solid #1a2535;
+        background: #fff;
+        color: #1a2535;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.12s;
+      }
+      .pause-toggle-btn:hover:not(:disabled) { background: #f0f2f5; }
+      .pause-toggle-btn:disabled { opacity: 0.5; cursor: default; }
+      .pause-toggle-btn.pausing { border-color: #c84b00; color: #c84b00; }
+      .pause-msg-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        align-items: center;
+      }
+      .pause-msg-row input {
+        flex: 1;
+        padding: 7px 10px;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 0.84rem;
+        font-family: inherit;
+        outline: none;
+      }
+      .pause-msg-row input:focus { border-color: #c84b00; }
+      .pause-save-btn {
+        padding: 7px 14px;
+        border: 1.5px solid #d0d0d0;
+        border-radius: 6px;
+        background: #fafafa;
+        font-size: 0.82rem;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .pause-save-btn:hover:not(:disabled) { background: #f0f0f0; }
+      .pause-save-btn:disabled { opacity: 0.5; cursor: default; }
+
     </style>
   </head>
   <body>
@@ -1117,6 +1176,18 @@
 
       <!-- 收單 tab -->
       <div id="liveTab" class="tab-content">
+        <!-- 接單狀態控制（manager/owner 可操作；staff 只讀） -->
+        <div id="pausePanel" class="pause-panel hidden">
+          <div class="pause-status-bar">
+            <span id="pauseStatusDot" class="pause-dot accepting"></span>
+            <span id="pauseStatusLabel" class="pause-status-label">接單中</span>
+            <button id="pauseToggleBtn" class="pause-toggle-btn hidden" onclick="toggleAcceptingOrders()">暫停接單</button>
+          </div>
+          <div id="pauseMsgRow" class="pause-msg-row hidden">
+            <input id="pauseMsgInput" type="text" maxlength="60" placeholder="暫停訊息（顯示給顧客，可空白）" />
+            <button class="pause-save-btn" onclick="savePauseMessage()">儲存訊息</button>
+          </div>
+        </div>
         <div id="liveOrders" class="orders-grid">
           <div class="empty-state">目前無待處理訂單</div>
         </div>
@@ -1458,6 +1529,9 @@
         startListening(); // 所有 role 都需要即時收單
 
         const canManage = profile.role === "manager" || profile.role === "owner";
+        canManagePause = canManage;
+        loadPauseState();
+
         if (canManage) {
           setDefaultDate("listDate",  listPeriod);
           setDefaultDate("statsDate", statsPeriod);
@@ -1487,6 +1561,7 @@
       let listPeriod       = "day";
       let statsPeriod      = "day";
       let prevOrderCount   = -1;   // -1 = initial load, don't alert yet
+      let canManagePause   = false;
 
       // ── Service Worker：只清除舊的 firebase-messaging-sw.js，保留 PWA sw.js ──
       let swRegistration = null;
@@ -2814,6 +2889,12 @@
         const themeOk = sd?.theme?.primary && sd?.theme?.accent;
         results.push({ section: S_STORE, label: "主題色彩", status: themeOk ? "pass" : "warn",
           msg: themeOk ? (sd.theme.primary + " / " + sd.theme.accent) : "主題色彩未完整設定" });
+        const isPaused = sd?.acceptingOrders === false;
+        results.push({ section: S_STORE, label: "接單狀態",
+          status: isPaused ? "warn" : "pass",
+          msg:    isPaused ? ("暫停接單" + (sd.pauseMessage ? "：" + sd.pauseMessage : "")) : "接單中",
+          hint:   isPaused ? "前往「收單」tab 恢復接單" : "",
+          navTab: isPaused ? "live" : "" });
 
         // ── 菜單 ──
         const S_MENU = "菜單";
@@ -2881,6 +2962,74 @@
                "<div class=\"health-msg\">" + r.msg + "</div>" + hintHtml + "</div></div>";
           return h;
         }).join("");
+      }
+
+      // ── Pause / Accept Orders ──
+      async function loadPauseState() {
+        try {
+          const snap = await storeDoc().get();
+          const d = snap.exists ? snap.data() : {};
+          updatePauseUI(d.acceptingOrders !== false, d.pauseMessage || "");
+        } catch (err) {
+          console.error("loadPauseState:", err);
+        }
+      }
+
+      function updatePauseUI(accepting, pauseMsg) {
+        const panel    = document.getElementById("pausePanel");
+        const dot      = document.getElementById("pauseStatusDot");
+        const label    = document.getElementById("pauseStatusLabel");
+        const btn      = document.getElementById("pauseToggleBtn");
+        const msgRow   = document.getElementById("pauseMsgRow");
+        const msgInput = document.getElementById("pauseMsgInput");
+
+        panel.classList.remove("hidden");
+        panel.classList.toggle("paused", !accepting);
+        dot.className = "pause-dot " + (accepting ? "accepting" : "paused");
+        label.textContent = accepting ? "接單中" : "暫停接單中";
+
+        if (canManagePause) {
+          btn.textContent = accepting ? "暫停接單" : "恢復接單";
+          btn.classList.toggle("pausing", !accepting);
+          btn.classList.remove("hidden");
+          if (msgInput) msgInput.value = pauseMsg;
+          msgRow.classList.toggle("hidden", accepting);
+        }
+      }
+
+      async function toggleAcceptingOrders() {
+        const btn = document.getElementById("pauseToggleBtn");
+        btn.disabled = true;
+        const currentState = !document.getElementById("pausePanel").classList.contains("paused");
+        const newValue = !currentState;
+        try {
+          const msgInput = document.getElementById("pauseMsgInput");
+          const updates  = { acceptingOrders: newValue };
+          if (!newValue && msgInput) updates.pauseMessage = msgInput.value.trim();
+          await storeDoc().update(updates);
+          updatePauseUI(newValue, (msgInput?.value || "").trim());
+        } catch (err) {
+          alert("操作失敗：" + err.message);
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      async function savePauseMessage() {
+        const msgInput = document.getElementById("pauseMsgInput");
+        const saveBtn  = document.querySelector(".pause-save-btn");
+        const msg      = (msgInput?.value || "").trim();
+        if (saveBtn) saveBtn.disabled = true;
+        try {
+          await storeDoc().update({ pauseMessage: msg });
+          if (saveBtn) {
+            saveBtn.textContent = "✓";
+            setTimeout(() => { saveBtn.textContent = "儲存訊息"; saveBtn.disabled = false; }, 1400);
+          }
+        } catch (err) {
+          alert("儲存失敗：" + err.message);
+          if (saveBtn) saveBtn.disabled = false;
+        }
       }
 
       // ── QR Code Tab ──

@@ -31,6 +31,8 @@ const storeReady = (async function () {
     if (d.theme)         STORE_CONFIG.theme         = d.theme;
     if (d.layout)        STORE_CONFIG.layout        = d.layout;
     if (d.categoryOrder) STORE_CONFIG.categoryOrder = d.categoryOrder;
+    STORE_CONFIG.acceptingOrders = d.acceptingOrders !== false;
+    STORE_CONFIG.pauseMessage    = d.pauseMessage    || "";
     storeLoaded = true;
   } catch (err) {
     storeLoadError = err.message || "載入店家設定失敗，請稍後再試。";

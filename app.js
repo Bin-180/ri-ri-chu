@@ -446,9 +446,23 @@ function showStoreError(msg) {
     '<p style="font-size:0.88rem;color:#666;">' + msg + '</p></div></div>';
 }
 
+function applyPauseState() {
+  const paused  = STORE_CONFIG.acceptingOrders === false;
+  const notice  = document.getElementById("pauseNotice");
+  const msgEl   = document.getElementById("pauseMsg");
+  const btn     = document.getElementById("checkout");
+  if (notice) notice.classList.toggle("hidden", !paused);
+  if (msgEl)  msgEl.textContent = paused ? (STORE_CONFIG.pauseMessage || "目前暫停接單，請稍後再試") : "";
+  if (btn)    btn.disabled = paused;
+}
+
 async function checkout() {
   if (!storeLoaded) {
     showToast("店家設定未載入，無法送出訂單");
+    return;
+  }
+  if (STORE_CONFIG.acceptingOrders === false) {
+    showToast(STORE_CONFIG.pauseMessage || "目前暫停接單，請稍後再試");
     return;
   }
   const rows = getCartRows();
@@ -640,6 +654,7 @@ function applyStoreConfig() {
 storeReady.then(function () {
   if (storeLoadError) { showStoreError(storeLoadError); return; }
   applyStoreConfig();
+  applyPauseState();
   renderCategories();
   renderMenu();
   renderCart();
