@@ -173,8 +173,15 @@ function getCategories() {
   return [...new Set(menuItems.map((item) => item.category))];
 }
 
+function applyCategoryOrder(cats) {
+  const order = STORE_CONFIG.categoryOrder || [];
+  const ordered = order.filter(c => cats.includes(c));
+  const rest    = cats.filter(c => !order.includes(c));
+  return [...ordered, ...rest];
+}
+
 function renderCategories() {
-  categoryTabsEl.innerHTML = getCategories()
+  categoryTabsEl.innerHTML = applyCategoryOrder(getCategories())
     .map((cat) =>
       `<button class="category-tab" data-category="${cat}" type="button">${cat}</button>`)
     .join("");
@@ -249,7 +256,7 @@ function sectionHeadingHTML(cat, items) {
 }
 
 function renderMenu() {
-  const categories = [...new Set(menuItems.map((item) => item.category))];
+  const categories = applyCategoryOrder([...new Set(menuItems.map((item) => item.category))]);
   menuListEl.innerHTML = categories.map((cat) => {
     const items = menuItems.filter((item) => item.category === cat);
     return `
@@ -430,7 +437,20 @@ function setActiveButton(selector, attribute, value) {
   });
 }
 
+function showStoreError(msg) {
+  document.body.innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;' +
+    'padding:24px;text-align:center;font-family:\'PingFang TC\',sans-serif;">' +
+    '<div><p style="font-size:2rem;margin-bottom:12px;">⚠️</p>' +
+    '<p style="font-size:1.1rem;font-weight:600;color:#c0392b;margin-bottom:8px;">無法載入店家</p>' +
+    '<p style="font-size:0.88rem;color:#666;">' + msg + '</p></div></div>';
+}
+
 async function checkout() {
+  if (!storeLoaded) {
+    showToast("店家設定未載入，無法送出訂單");
+    return;
+  }
   const rows = getCartRows();
   if (rows.length === 0) {
     showToast("請先加入餐點");
@@ -483,7 +503,11 @@ async function checkout() {
     if (phone)     orderData.phone          = phone;
     if (scheduled) orderData.scheduledTime  = scheduled;
 
-    await ordersCollection().add(orderData);
+    const orderId = ordersCollection().doc().id;
+    const batch = db.batch();
+    batch.set(ordersCollection().doc(orderId), orderData);
+    batch.set(pendingOrdersCollection().doc(orderId), orderData);
+    await batch.commit();
 
     showToast(`訂單 #${orderNumber} 已送出，應收 ${formatPrice(totals.total)}`);
     state.cart.clear();
@@ -613,8 +637,11 @@ function applyStoreConfig() {
 }
 
 // ── Init ──
-applyStoreConfig();
-renderCategories();
-renderMenu();
-renderCart();
-loadMenuFromFirestore();
+storeReady.then(function () {
+  if (storeLoadError) { showStoreError(storeLoadError); return; }
+  applyStoreConfig();
+  renderCategories();
+  renderMenu();
+  renderCart();
+  loadMenuFromFirestore();
+});

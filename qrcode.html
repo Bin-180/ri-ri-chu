@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>點餐 QR Code</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1a2535">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="小彬點餐">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -132,21 +137,51 @@
 
     <div class="hours-badge" id="qrHours"></div>
   </div>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="app-config.js"></script>
   <script src="store-config.js"></script>
+  <script src="db-helpers.js"></script>
   <script>
-    (function() {
-      const c = STORE_CONFIG;
-      document.title = `${c.storeName} 點餐 QR Code`;
-      document.getElementById("qrLogo").src       = c.logo;
-      document.getElementById("qrLogo").alt       = c.storeName;
-      document.getElementById("qrName").textContent    = c.storeName;
-      document.getElementById("qrSubtitle").textContent = c.subtitle;
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=${encodeURIComponent(c.orderUrl)}`;
-      document.getElementById("qrCodeImg").src    = qrUrl;
-      document.getElementById("qrUrl").textContent     = c.orderUrl;
-      document.getElementById("qrInfo").innerHTML      = `${c.address}<br />${c.phone}`;
-      document.getElementById("qrHours").textContent   = `${c.hours}　｜　${c.closedDay}`;
+    (async function () {
+      const params  = new URLSearchParams(window.location.search);
+      const storeId = params.get("store") || STORE_CONFIG.storeId;
+
+      setActiveStoreId(storeId);
+
+      // 點餐連結：baseUrl 來自 APP_CONFIG，換網域只需改 app-config.js
+      const orderUrl = APP_CONFIG.baseUrl.replace(/\/$/, "") + "/?store=" + storeId;
+
+      // 預設用 STORE_CONFIG，Firestore 載入成功則覆蓋
+      let c = Object.assign({}, STORE_CONFIG, { storeId });
+      try {
+        const snap = await db.collection("stores").doc(storeId).get();
+        if (snap.exists) {
+          const d = snap.data();
+          if (d.storeName) c.storeName = d.storeName;
+          if (d.subtitle)  c.subtitle  = d.subtitle;
+          if (d.address)   c.address   = d.address;
+          if (d.phone)     c.phone     = d.phone;
+          if (d.hours)     c.hours     = d.hours;
+          if (d.closedDay) c.closedDay = d.closedDay;
+          if (d.logo)      c.logo      = d.logo;
+        }
+      } catch (_) { /* fallback to STORE_CONFIG */ }
+
+      document.title = c.storeName + " 點餐 QR Code";
+      document.getElementById("qrLogo").src              = c.logo;
+      document.getElementById("qrLogo").alt              = c.storeName;
+      document.getElementById("qrName").textContent      = c.storeName;
+      document.getElementById("qrSubtitle").textContent  = c.subtitle;
+      document.getElementById("qrCodeImg").src =
+        "https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=" +
+        encodeURIComponent(orderUrl);
+      document.getElementById("qrUrl").textContent       = orderUrl;
+      document.getElementById("qrInfo").innerHTML        = c.address + "<br />" + c.phone;
+      document.getElementById("qrHours").textContent     = c.hours + "　｜　" + c.closedDay;
     })();
   </script>
+  <script src="pwa.js"></script>
 </body>
 </html>

@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>後台</title>
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1a2535">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="小彬後台">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet" />
     <style>
@@ -343,6 +349,20 @@
       }
 
       .history-controls input[type="date"]:focus { border-color: #1a2535; }
+
+      .export-csv-btn {
+        padding: 7px 14px;
+        border: 1.5px solid #d0d0d0;
+        border-radius: 6px;
+        background: #fafafa;
+        color: #444;
+        font-size: 0.85rem;
+        cursor: pointer;
+        white-space: nowrap;
+        margin-left: auto;
+      }
+      .export-csv-btn:hover:not(:disabled) { background: #f0f0f0; }
+      .export-csv-btn:disabled { opacity: 0.5; cursor: default; }
 
 .history-summary {
         display: grid;
@@ -759,6 +779,224 @@
         box-shadow: 0 3px 10px rgba(0,0,0,0.18);
       }
 
+      /* ── Menu Sort Mode ── */
+      .menu-sort-btn {
+        padding: 6px 14px;
+        border: 1.5px solid #1a2535;
+        border-radius: 6px;
+        background: #fff;
+        color: #1a2535;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .menu-sort-btn.active { background: #1a2535; color: #fff; }
+      .sort-move-btn {
+        padding: 3px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: #f8f8f8;
+        font-size: 0.82rem;
+        cursor: pointer;
+        min-width: 34px;
+        line-height: 1.4;
+      }
+      .sort-move-btn:hover:not(:disabled) { background: #e8e8e8; }
+      .sort-move-btn:disabled { opacity: 0.25; cursor: default; }
+      .sort-cat-panel {
+        background: #f7f8fa;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        padding: 12px 14px 8px;
+        margin-bottom: 12px;
+      }
+      .sort-cat-panel-title { font-size: 0.78rem; color: #888; font-weight: 600; margin-bottom: 8px; }
+      .sort-cat-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 0;
+        border-bottom: 1px solid #efefef;
+      }
+      .sort-cat-row:last-child { border-bottom: none; }
+      .sort-cat-name { flex: 1; font-size: 0.85rem; color: #333; }
+
+      /* ── Health Check Tab ── */
+      .health-summary {
+        padding: 14px 18px;
+        border-radius: 8px;
+        font-size: 0.92rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .health-summary.all-pass  { background: #e8f8f0; color: #1a7a45; }
+      .health-summary.has-warn  { background: #fff8e6; color: #a0660a; }
+      .health-summary.has-error { background: #fde8e8; color: #c0392b; }
+      .health-section-title {
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: #aaa;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        margin: 18px 0 6px;
+      }
+      .health-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px 14px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 5px;
+      }
+      .health-icon { font-size: 0.95rem; min-width: 20px; line-height: 1.7; }
+      .health-label { font-size: 0.86rem; font-weight: 600; color: #222; }
+      .health-msg   { font-size: 0.76rem; color: #888; margin-top: 2px; word-break: break-all; }
+      .health-hint  { font-size: 0.74rem; color: #b08020; margin-top: 4px; }
+      .health-nav   { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+      .health-nav:hover { color: #1a2535; }
+      .health-recheck-btn {
+        margin-top: 20px;
+        padding: 8px 22px;
+        border: 1.5px solid #1a2535;
+        border-radius: 6px;
+        background: #fff;
+        color: #1a2535;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .health-recheck-btn:hover { background: #f0f2f5; }
+
+      /* ── Store Settings Tab ── */
+      .settings-section {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 14px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      }
+      .settings-section h3 {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #aaa;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .settings-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 12px;
+      }
+      .settings-row label { font-size: 0.8rem; color: #666; font-weight: 600; }
+      .settings-row input[type="text"] {
+        padding: 8px 11px;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 7px;
+        font-size: 0.88rem;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.12s;
+      }
+      .settings-row input[type="text"]:focus { border-color: #1a2535; }
+      .settings-color-row { display: flex; align-items: center; gap: 8px; }
+      .settings-color-row input[type="color"] {
+        width: 38px; height: 34px;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 6px;
+        cursor: pointer;
+        padding: 2px;
+        flex-shrink: 0;
+      }
+      .settings-color-row input[type="text"] { flex: 1; }
+      .settings-logo-preview {
+        width: 72px; height: 72px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e8e8e8;
+        display: block;
+        margin-bottom: 10px;
+        background: #f5f5f5;
+      }
+      .settings-logo-hint { font-size: 0.73rem; color: #bbb; margin-top: 5px; }
+      .settings-footer { display: flex; align-items: center; padding-bottom: 24px; gap: 12px; }
+      .settings-save-btn {
+        padding: 10px 26px;
+        background: #1a2535;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.12s;
+      }
+      .settings-save-btn:disabled { opacity: 0.5; cursor: default; }
+      .settings-status { font-size: 0.82rem; color: #27ae60; }
+      .settings-status.err { color: #c0392b; }
+
+      /* ── Staff Accounts Tab ── */
+      .staff-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+      .staff-table th { text-align: left; padding: 7px 10px; border-bottom: 2px solid #eee; color: #888; font-weight: 600; }
+      .staff-table td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+      .staff-table tr:last-child td { border-bottom: none; }
+      .staff-role-badge {
+        display: inline-block; padding: 2px 8px; border-radius: 4px;
+        font-size: 0.75rem; font-weight: 600;
+      }
+      .staff-role-badge.owner   { background: #fdf0e0; color: #c8861a; }
+      .staff-role-badge.manager { background: #e8f0fe; color: #1a5ca8; }
+      .staff-role-badge.staff   { background: #f0f4f0; color: #2d6a3f; }
+      .staff-disabled { color: #bbb; font-style: italic; }
+      .staff-action-btn {
+        padding: 3px 10px; border: 1px solid #ddd; border-radius: 5px;
+        background: #fafafa; font-size: 0.78rem; cursor: pointer; margin-right: 4px;
+      }
+      .staff-action-btn:hover { background: #f0f0f0; }
+      .staff-action-btn.danger { border-color: #e88; color: #c00; }
+      .staff-action-btn.danger:hover { background: #fff0f0; }
+      .staff-empty { color: #bbb; font-size: 0.85rem; padding: 12px 0; }
+
+      /* ── QR Code Tab ── */
+      .qr-tab-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 28px 20px 24px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        max-width: 380px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .qr-tab-name { font-size: 1.15rem; font-weight: 700; color: #1a2535; margin-bottom: 4px; }
+      .qr-tab-url { font-size: 0.7rem; color: #bbb; margin-bottom: 18px; word-break: break-all; }
+      .qr-tab-img-wrap {
+        display: inline-block;
+        padding: 10px;
+        border: 2px solid #1a2535;
+        border-radius: 10px;
+        margin-bottom: 18px;
+      }
+      .qr-tab-img-wrap img { width: 220px; height: 220px; display: block; }
+      .qr-print-btn {
+        padding: 10px 26px;
+        background: #1a2535;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
       /* Edit Modal */
       .mm-overlay {
         position: fixed;
@@ -871,6 +1109,10 @@
         <button class="tab-btn" data-tab="orderList">訂單明細</button>
         <button class="tab-btn" data-tab="stats">統計數據</button>
         <button class="tab-btn" data-tab="menu">菜單管理</button>
+        <button class="tab-btn" data-tab="qrcode">QR Code</button>
+        <button class="tab-btn" data-tab="storeSettings">店家設定</button>
+        <button class="tab-btn" data-tab="staffAccounts">員工帳號</button>
+        <button class="tab-btn" data-tab="healthCheck">系統檢查</button>
       </div>
 
       <!-- 收單 tab -->
@@ -888,6 +1130,7 @@
             <button class="period-btn list-period-btn" data-period="month" type="button">月</button>
           </div>
           <input type="date" id="listDate" />
+          <button class="export-csv-btn" id="exportCsvBtn" onclick="exportCSV()" type="button">匯出 CSV</button>
         </div>
         <div id="historyList" class="history-list"></div>
       </div>
@@ -949,11 +1192,112 @@
       <div id="menuTab" class="tab-content hidden">
         <div class="menu-admin-bar">
           <span id="menuAdminStatus" class="menu-admin-status"></span>
+          <button class="menu-sort-btn" id="menuSortToggle" onclick="toggleSortMode()" type="button">排序</button>
           <button class="menu-seed-btn" onclick="seedMenuAdmin()">↺ 匯入預設菜單</button>
         </div>
         <div id="menuCatTabs" class="menu-cat-tabs"></div>
+        <div id="menuSortPanel" class="sort-cat-panel hidden">
+          <p class="sort-cat-panel-title">分類順序</p>
+          <div id="sortCatList"></div>
+        </div>
         <div id="menuAdminList"></div>
-        <button class="menu-add-fab" onclick="openMenuModal('')">＋ 新增品項</button>
+        <button class="menu-add-fab" id="menuAddFab" onclick="openMenuModal('')">＋ 新增品項</button>
+      </div>
+
+      <!-- QR Code tab -->
+      <div id="qrcodeTab" class="tab-content hidden">
+        <div class="qr-tab-card">
+          <p class="qr-tab-name" id="qrTabName"></p>
+          <p class="qr-tab-url" id="qrTabUrl"></p>
+          <div class="qr-tab-img-wrap">
+            <img id="qrTabImg" src="" alt="QR Code" />
+          </div>
+          <br />
+          <button class="qr-print-btn" onclick="printQRCode()">列印 QR Code</button>
+        </div>
+      </div>
+
+      <!-- 店家設定 tab -->
+      <div id="storeSettingsTab" class="tab-content hidden">
+        <div class="settings-section">
+          <h3>基本資料</h3>
+          <div class="settings-row"><label>店名</label><input type="text" id="setStoreName" /></div>
+          <div class="settings-row"><label>副標題</label><input type="text" id="setSubtitle" /></div>
+          <div class="settings-row"><label>地址</label><input type="text" id="setAddress" /></div>
+          <div class="settings-row"><label>電話</label><input type="text" id="setPhone" /></div>
+          <div class="settings-row"><label>營業時間</label><input type="text" id="setHours" /></div>
+          <div class="settings-row"><label>公休說明</label><input type="text" id="setClosedDay" /></div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Logo</h3>
+          <img id="setLogoPreview" class="settings-logo-preview" src="" alt="Logo 預覽" />
+          <div class="settings-row">
+            <label>圖片網址</label>
+            <input type="url" id="setLogoUrl" placeholder="https://example.com/logo.png" />
+          </div>
+          <p class="settings-logo-hint">貼入公開圖片 URL，建議 200×200 px</p>
+        </div>
+
+        <div class="settings-section">
+          <h3>主題色彩</h3>
+          <div class="settings-row">
+            <label>主色</label>
+            <div class="settings-color-row">
+              <input type="color" id="setThemePrimary" />
+              <input type="text" id="setThemePrimaryHex" maxlength="7" placeholder="#1a2535" />
+            </div>
+          </div>
+          <div class="settings-row">
+            <label>輔色</label>
+            <div class="settings-color-row">
+              <input type="color" id="setThemeAccent" />
+              <input type="text" id="setThemeAccentHex" maxlength="7" placeholder="#c8861a" />
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-footer">
+          <button class="settings-save-btn" id="settingsSaveBtn" onclick="saveStoreSettings()">儲存設定</button>
+          <span class="settings-status" id="settingsStatus"></span>
+        </div>
+      </div>
+
+      <!-- 員工帳號 tab -->
+      <div id="staffAccountsTab" class="tab-content hidden">
+
+        <div class="settings-section">
+          <h3>本店員工</h3>
+          <div id="staffListWrap">
+            <p class="staff-empty">載入中…</p>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>新增帳號</h3>
+          <div class="settings-row"><label>Email</label><input type="email" id="newStaffEmail" autocomplete="off" /></div>
+          <div class="settings-row"><label>密碼</label><input type="password" id="newStaffPassword" autocomplete="new-password" placeholder="至少 6 個字元" /></div>
+          <div class="settings-row"><label>姓名</label><input type="text" id="newStaffName" /></div>
+          <div class="settings-row">
+            <label>角色</label>
+            <select id="newStaffRole">
+              <option value="staff">staff（員工）</option>
+              <option value="manager">manager（主管）</option>
+            </select>
+          </div>
+          <div class="settings-footer">
+            <button class="settings-save-btn" id="addStaffBtn" onclick="addStaffAccount()">新增帳號</button>
+            <span class="settings-status" id="addStaffStatus"></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 系統檢查 tab -->
+      <div id="healthCheckTab" class="tab-content hidden">
+        <div id="healthSummary" class="health-summary"></div>
+        <div id="healthList"></div>
+        <button class="health-recheck-btn" onclick="runHealthCheck()">重新檢查</button>
       </div>
 
     </div>
@@ -966,6 +1310,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
+    <script src="app-config.js"></script>
     <script src="store-config.js"></script>
     <script src="db-helpers.js"></script>
     <script src="menu-data.js"></script>
@@ -989,6 +1334,9 @@
           btn.classList.add("active");
           document.querySelectorAll(".tab-content").forEach((c) => c.classList.add("hidden"));
           document.getElementById(btn.dataset.tab + "Tab").classList.remove("hidden");
+          if (btn.dataset.tab === "qrcode") renderQRCode();
+          if (btn.dataset.tab === "staffAccounts") loadStaffList();
+          if (btn.dataset.tab === "healthCheck")   runHealthCheck();
         });
       });
 
@@ -996,8 +1344,8 @@
       // 定義各角色可見的 tab（前端隱藏；Firestore Rules 做後端強制）
       const ROLE_TABS = {
         staff:   ["live"],
-        manager: ["live", "orderList", "stats"],
-        owner:   ["live", "orderList", "stats", "menu"],
+        manager: ["live", "orderList", "stats", "qrcode"],
+        owner:   ["live", "orderList", "stats", "menu", "qrcode", "storeSettings", "staffAccounts", "healthCheck"],
       };
 
       function applyRoleTabs(role) {
@@ -1044,6 +1392,11 @@
           }
           if (!ROLE_TABS[profile.role]) {
             showLogin(`此帳號角色無效（role: "${profile.role || "未設定"}"），請聯絡管理員`);
+            auth.signOut();
+            return;
+          }
+          if (profile.active === false) {
+            showLogin("此帳號已被停用，請聯絡店家負責人");
             auth.signOut();
             return;
           }
@@ -1117,6 +1470,10 @@
           document.getElementById("testNotifyBtn").style.display = canManage ? "" : "none";
         } catch (_) {}
 
+        if (profile.role === "owner") loadStoreSettings();
+        if (canManage) renderQRCode();
+        // staffAccounts tab 只在切換過去時才載入（避免不必要的讀取）
+
         try { startNoSleep(); } catch (_) {}
         try {
           if (Notification?.permission === "default") Notification.requestPermission();
@@ -1131,12 +1488,15 @@
       let statsPeriod      = "day";
       let prevOrderCount   = -1;   // -1 = initial load, don't alert yet
 
-      // ── Service Worker：清除舊的 firebase-messaging-sw.js（會干擾 Firestore）──
+      // ── Service Worker：只清除舊的 firebase-messaging-sw.js，保留 PWA sw.js ──
       let swRegistration = null;
 
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.getRegistrations().then(regs => {
-          regs.forEach(reg => reg.unregister());
+          regs.forEach(reg => {
+            const url = reg.active?.scriptURL || reg.installing?.scriptURL || reg.waiting?.scriptURL || "";
+            if (url.includes("firebase-messaging-sw.js")) reg.unregister();
+          });
         });
       }
 
@@ -1267,8 +1627,7 @@
 
       function startListening() {
         if (unsubscribe) unsubscribe();
-        unsubscribe = ordersCollection()
-          .where("status", "==", "pending")
+        unsubscribe = pendingOrdersCollection()
           .onSnapshot((snapshot) => {
             const docs = snapshot.docs.slice().sort((a, b) => {
               const at = a.data().createdAt?.toMillis() || 0;
@@ -1370,10 +1729,13 @@
         const btn = document.querySelector(`#card-${id} .done-btn`);
         if (btn) { btn.disabled = true; btn.textContent = "處理中…"; }
         try {
-          await ordersCollection().doc(id).update({
+          const batch = db.batch();
+          batch.update(ordersCollection().doc(id), {
             status: "done",
             doneAt: firebase.firestore.FieldValue.serverTimestamp(),
           });
+          batch.delete(pendingOrdersCollection().doc(id));
+          await batch.commit();
         } catch (err) {
           console.error(err);
           alert("操作失敗，請重試");
@@ -1447,6 +1809,90 @@
         } catch (err) {
           console.error(err);
           document.getElementById("historyList").innerHTML = '<div class="empty-state">載入失敗</div>';
+        }
+      }
+
+      // ── CSV 匯出 ──
+      function csvEscape(val) {
+        const s = String(val == null ? "" : val);
+        if (s.search(/[,"\r\n]/) !== -1) return '"' + s.replace(/"/g, '""') + '"';
+        return s;
+      }
+
+      function fmtCsvDatetime(ts) {
+        if (!ts) return "";
+        const d   = new Date(ts.toMillis());
+        const pad = n => String(n).padStart(2, "0");
+        return d.getFullYear() + "/" +
+               pad(d.getMonth() + 1) + "/" +
+               pad(d.getDate()) + " " +
+               pad(d.getHours()) + ":" +
+               pad(d.getMinutes());
+      }
+
+      async function exportCSV() {
+        const dateStr = document.getElementById("listDate").value;
+        if (!dateStr) { alert("請先選擇日期"); return; }
+
+        const btn = document.getElementById("exportCsvBtn");
+        btn.disabled = true;
+        btn.textContent = "匯出中…";
+
+        try {
+          const orders = await fetchOrders(dateStr, listPeriod);
+          if (orders.length === 0) {
+            alert("此期間無已完成訂單，無法匯出");
+            return;
+          }
+
+          const storeId = getStoreId();
+          const suffix  = listPeriod === "month" ? dateStr.slice(0, 7) : dateStr;
+          const filename = storeId + "-orders-" + suffix + ".csv";
+
+          const HEADERS = [
+            "訂單編號", "建立時間", "完成時間", "用餐方式",
+            "顧客/桌號", "電話", "取餐時間", "品項明細",
+            "備註", "總金額", "狀態"
+          ];
+
+          const rows = orders.map(o => {
+            const items = (o.items || [])
+              .map(item => item.name + " x" + item.quantity + " ($" + item.lineTotal + ")")
+              .join("；");
+            return [
+              o.orderNumber  || "",
+              fmtCsvDatetime(o.createdAt),
+              fmtCsvDatetime(o.doneAt),
+              o.service      || "",
+              o.customer     || "",
+              o.phone        || "",
+              o.scheduledTime || "",
+              items,
+              o.note         || "",
+              o.total        != null ? o.total : "",
+              o.status       || "",
+            ];
+          });
+
+          const csv = [HEADERS, ...rows]
+            .map(row => row.map(csvEscape).join(","))
+            .join("\r\n");
+
+          // UTF-8 BOM — Excel 開啟中文不亂碼
+          const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+          const url  = URL.createObjectURL(blob);
+          const a    = document.createElement("a");
+          a.href     = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          alert("匯出失敗：" + err.message);
+        } finally {
+          btn.disabled    = false;
+          btn.textContent = "匯出 CSV";
         }
       }
 
@@ -1639,6 +2085,8 @@
       let menuAdminItems  = [];
       let menuAdminCat    = "";
       let menuInFirestore = false;
+      let menuSortMode    = false;
+      let categoryOrder   = [];
 
       document.querySelector('[data-tab="menu"]').addEventListener("click", loadMenuAdmin);
 
@@ -1646,13 +2094,17 @@
         const statusEl = document.getElementById("menuAdminStatus");
         statusEl.textContent = "載入中…";
         try {
-          const snap = await menuCollection().orderBy("sortOrder").get();
-          if (snap.empty) {
+          const [menuSnap, storeSnap] = await Promise.all([
+            menuCollection().orderBy("sortOrder").get(),
+            storeDoc().get(),
+          ]);
+          categoryOrder = storeSnap.data()?.categoryOrder || [];
+          if (menuSnap.empty) {
             menuAdminItems  = DEFAULT_MENU.slice();
             menuInFirestore = false;
             statusEl.textContent = "（顯示預設菜單，尚未寫入資料庫）";
           } else {
-            menuAdminItems  = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            menuAdminItems  = menuSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             menuInFirestore = true;
             statusEl.textContent = `共 ${menuAdminItems.length} 項`;
           }
@@ -1661,41 +2113,132 @@
           statusEl.textContent = "載入失敗，顯示預設菜單";
         }
         if (!menuAdminCat && menuAdminItems.length > 0) {
-          menuAdminCat = menuAdminItems[0].category;
+          menuAdminCat = adminApplyCategoryOrder(
+            [...new Set(menuAdminItems.map(i => i.category))]
+          )[0];
         }
         renderMenuAdmin();
       }
 
+      function adminApplyCategoryOrder(cats) {
+        const ordered = categoryOrder.filter(c => cats.includes(c));
+        const rest    = cats.filter(c => !categoryOrder.includes(c));
+        return [...ordered, ...rest];
+      }
+
       function renderMenuAdmin() {
-        const cats = [...new Set(menuAdminItems.map(i => i.category))];
+        const allCats = [...new Set(menuAdminItems.map(i => i.category))];
+        const cats    = adminApplyCategoryOrder(allCats);
         document.getElementById("menuCatTabs").innerHTML = cats.map(cat => `
           <button class="menu-cat-btn${cat === menuAdminCat ? " active" : ""}"
             onclick="setMenuAdminCat(this.dataset.cat)" data-cat="${cat.replace(/"/g,"&quot;")}">${cat}</button>
         `).join("");
 
-        const items = menuAdminItems.filter(i => i.category === menuAdminCat);
+        const items  = menuAdminItems.filter(i => i.category === menuAdminCat);
         const listEl = document.getElementById("menuAdminList");
         if (items.length === 0) {
           listEl.innerHTML = '<div class="empty-state">此分類無品項</div>';
           return;
         }
-        listEl.innerHTML = items.map(item => {
+        listEl.innerHTML = items.map((item, idx) => {
           const avail = item.available !== false;
+          const actions = menuSortMode
+            ? `<div class="menu-item-actions">
+                 <button class="sort-move-btn" onclick="moveItem('${item.id}',-1)" ${idx === 0 ? "disabled" : ""}>↑</button>
+                 <button class="sort-move-btn" onclick="moveItem('${item.id}',1)" ${idx === items.length - 1 ? "disabled" : ""}>↓</button>
+               </div>`
+            : `<div class="menu-item-actions">
+                 <button class="btn-avail ${avail ? "on" : "off"}" onclick="toggleMenuAvail('${item.id}',${!avail})">${avail ? "供應中" : "已下架"}</button>
+                 <button class="btn-edit-mi" onclick="openMenuModal('${item.id}')">編輯</button>
+                 <button class="btn-del-mi" onclick="deleteMenuAdmin('${item.id}')">刪除</button>
+               </div>`;
           return `
             <div class="menu-item-row${avail ? "" : " unavail"}">
               <span class="menu-item-dot" style="background:${item.color || "#aaa"}"></span>
               <span class="menu-item-name">${item.name}</span>
               <span class="menu-item-price">${adminPriceLabel(item)}</span>
-              <div class="menu-item-actions">
-                <button class="btn-avail ${avail ? "on" : "off"}"
-                  onclick="toggleMenuAvail('${item.id}', ${!avail})">
-                  ${avail ? "供應中" : "已下架"}
-                </button>
-                <button class="btn-edit-mi" onclick="openMenuModal('${item.id}')">編輯</button>
-                <button class="btn-del-mi" onclick="deleteMenuAdmin('${item.id}')">刪除</button>
-              </div>
+              ${actions}
             </div>`;
         }).join("");
+      }
+
+      // ── Sort mode ──
+      function toggleSortMode() {
+        menuSortMode = !menuSortMode;
+        const btn = document.getElementById("menuSortToggle");
+        const fab = document.getElementById("menuAddFab");
+        btn.textContent = menuSortMode ? "完成排序" : "排序";
+        btn.classList.toggle("active", menuSortMode);
+        fab.style.display = menuSortMode ? "none" : "";
+
+        if (menuSortMode) {
+          renderSortCatPanel();
+        } else {
+          saveSortOrders();
+          document.getElementById("menuSortPanel").classList.add("hidden");
+        }
+        renderMenuAdmin();
+      }
+
+      function renderSortCatPanel() {
+        const allCats = [...new Set(menuAdminItems.map(i => i.category))];
+        categoryOrder = adminApplyCategoryOrder(allCats); // sync missing cats to end
+        const list = document.getElementById("sortCatList");
+        list.innerHTML = categoryOrder.map((cat, idx) => `
+          <div class="sort-cat-row">
+            <span class="sort-cat-name">${cat}</span>
+            <button class="sort-move-btn" onclick="moveCat(${idx},-1)" ${idx === 0 ? "disabled" : ""}>↑</button>
+            <button class="sort-move-btn" onclick="moveCat(${idx},1)" ${idx === categoryOrder.length - 1 ? "disabled" : ""}>↓</button>
+          </div>`).join("");
+        document.getElementById("menuSortPanel").classList.remove("hidden");
+      }
+
+      function moveCat(idx, dir) {
+        const newIdx = idx + dir;
+        if (newIdx < 0 || newIdx >= categoryOrder.length) return;
+        [categoryOrder[idx], categoryOrder[newIdx]] = [categoryOrder[newIdx], categoryOrder[idx]];
+        renderSortCatPanel();
+        renderMenuAdmin();
+      }
+
+      function moveItem(id, dir) {
+        const catItems = menuAdminItems
+          .map((item, idx) => ({ item, idx }))
+          .filter(({ item }) => item.category === menuAdminCat);
+        const pos = catItems.findIndex(({ item }) => item.id === id);
+        const newPos = pos + dir;
+        if (newPos < 0 || newPos >= catItems.length) return;
+        const idxA = catItems[pos].idx;
+        const idxB = catItems[newPos].idx;
+        [menuAdminItems[idxA], menuAdminItems[idxB]] = [menuAdminItems[idxB], menuAdminItems[idxA]];
+        renderMenuAdmin();
+      }
+
+      async function saveSortOrders() {
+        if (!menuInFirestore) return; // 預設菜單尚未寫入，不儲存
+        const statusEl = document.getElementById("menuAdminStatus");
+        statusEl.textContent = "儲存排序中…";
+        const STEP = 10;
+        try {
+          const batch = db.batch();
+          // 依 categoryOrder 順序，每類的品項按目前陣列順序賦值
+          const catGroups = {};
+          menuAdminItems.forEach(item => {
+            (catGroups[item.category] = catGroups[item.category] || []).push(item);
+          });
+          Object.values(catGroups).forEach(items => {
+            items.forEach((item, idx) => {
+              if (item.id) batch.update(menuCollection().doc(item.id), { sortOrder: idx * STEP });
+            });
+          });
+          // 分類順序寫入 stores/{storeId}
+          batch.update(storeDoc(), { categoryOrder });
+          await batch.commit();
+          statusEl.textContent = "排序已儲存 ✓";
+        } catch (err) {
+          statusEl.textContent = "排序儲存失敗：" + err.message;
+          await loadMenuAdmin(); // 失敗時還原
+        }
       }
 
       function adminPriceLabel(item) {
@@ -2026,6 +2569,356 @@
 
         return "初點心";
       }
+
+      // ── Store Settings ──
+      async function loadStoreSettings() {
+        try {
+          const snap = await storeDoc().get();
+          if (!snap.exists) return;
+          const d = snap.data();
+          document.getElementById("setStoreName").value  = d.storeName  || "";
+          document.getElementById("setSubtitle").value   = d.subtitle   || "";
+          document.getElementById("setAddress").value    = d.address    || "";
+          document.getElementById("setPhone").value      = d.phone      || "";
+          document.getElementById("setHours").value      = d.hours      || "";
+          document.getElementById("setClosedDay").value  = d.closedDay  || "";
+          const primary = d.theme?.primary || "#1a2535";
+          const accent  = d.theme?.accent  || "#c8861a";
+          document.getElementById("setThemePrimary").value    = primary;
+          document.getElementById("setThemePrimaryHex").value = primary;
+          document.getElementById("setThemeAccent").value     = accent;
+          document.getElementById("setThemeAccentHex").value  = accent;
+          if (d.logo) {
+            document.getElementById("setLogoPreview").src = d.logo;
+            document.getElementById("setLogoUrl").value   = d.logo;
+          }
+        } catch (err) {
+          console.error("loadStoreSettings:", err);
+        }
+      }
+
+      async function saveStoreSettings() {
+        const btn    = document.getElementById("settingsSaveBtn");
+        const status = document.getElementById("settingsStatus");
+        btn.disabled = true;
+        status.className   = "settings-status";
+        status.textContent = "儲存中…";
+        try {
+          const primary = document.getElementById("setThemePrimaryHex").value || "#1a2535";
+          const accent  = document.getElementById("setThemeAccentHex").value  || "#c8861a";
+          const logoUrl = document.getElementById("setLogoUrl").value.trim();
+          const data = {
+            storeName: document.getElementById("setStoreName").value.trim(),
+            subtitle:  document.getElementById("setSubtitle").value.trim(),
+            address:   document.getElementById("setAddress").value.trim(),
+            phone:     document.getElementById("setPhone").value.trim(),
+            hours:     document.getElementById("setHours").value.trim(),
+            closedDay: document.getElementById("setClosedDay").value.trim(),
+            theme:     { primary, accent },
+            logo:      logoUrl,
+          };
+          await storeDoc().update(data);
+          Object.assign(STORE_CONFIG, data);
+          document.getElementById("adminBrandName").textContent = (data.storeName || "後台") + " 後台";
+          if (logoUrl) {
+            document.getElementById("setLogoPreview").src = logoUrl;
+            document.getElementById("adminLogo").src      = logoUrl;
+          }
+          status.textContent = "✓ 儲存成功";
+        } catch (err) {
+          status.className   = "settings-status err";
+          status.textContent = "儲存失敗：" + err.message;
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      // 色票雙向同步
+      document.getElementById("setThemePrimary").addEventListener("input", function () {
+        document.getElementById("setThemePrimaryHex").value = this.value;
+      });
+      document.getElementById("setThemePrimaryHex").addEventListener("input", function () {
+        if (/^#[0-9a-fA-F]{6}$/.test(this.value))
+          document.getElementById("setThemePrimary").value = this.value;
+      });
+      document.getElementById("setThemeAccent").addEventListener("input", function () {
+        document.getElementById("setThemeAccentHex").value = this.value;
+      });
+      document.getElementById("setThemeAccentHex").addEventListener("input", function () {
+        if (/^#[0-9a-fA-F]{6}$/.test(this.value))
+          document.getElementById("setThemeAccent").value = this.value;
+      });
+
+      // Logo URL 即時預覽
+      document.getElementById("setLogoUrl").addEventListener("input", function () {
+        const url = this.value.trim();
+        if (url) document.getElementById("setLogoPreview").src = url;
+      });
+
+      // ── Staff Accounts Tab ──
+      async function loadStaffList() {
+        const wrap = document.getElementById("staffListWrap");
+        wrap.innerHTML = "<p class=\"staff-empty\">載入中…</p>";
+        try {
+          const snap = await storeDoc().collection("members")
+            .orderBy("createdAt", "desc").get();
+          if (snap.empty) {
+            wrap.innerHTML = "<p class=\"staff-empty\">尚無員工帳號</p>";
+            return;
+          }
+          let rows = "";
+          snap.forEach(doc => {
+            const d   = doc.data();
+            const uid = doc.id;
+            const isOwnerRole = d.role === "owner";
+            const activeLabel = d.active === false
+              ? "<span class=\"staff-disabled\">已停用</span>" : "啟用中";
+            const roleBtn = isOwnerRole ? "" :
+              `<button class="staff-action-btn" onclick="changeStaffRole('${uid}','${d.role}')">改角色</button>`;
+            const toggleBtn = isOwnerRole ? "" :
+              (d.active === false
+                ? `<button class="staff-action-btn" onclick="toggleStaffActive('${uid}',false)">啟用</button>`
+                : `<button class="staff-action-btn danger" onclick="toggleStaffActive('${uid}',true)">停用</button>`);
+            rows += `<tr>
+              <td>${d.displayName || "-"}</td>
+              <td>${d.email || "-"}</td>
+              <td><span class="staff-role-badge ${d.role}">${d.role}</span></td>
+              <td>${activeLabel}</td>
+              <td>${roleBtn}${toggleBtn}</td>
+            </tr>`;
+          });
+          wrap.innerHTML = `<table class="staff-table">
+            <thead><tr><th>姓名</th><th>Email</th><th>角色</th><th>狀態</th><th>操作</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+        } catch (err) {
+          wrap.innerHTML = `<p class="staff-empty">載入失敗：${err.message}</p>`;
+        }
+      }
+
+      async function addStaffAccount() {
+        const email       = document.getElementById("newStaffEmail").value.trim();
+        const password    = document.getElementById("newStaffPassword").value;
+        const displayName = document.getElementById("newStaffName").value.trim();
+        const role        = document.getElementById("newStaffRole").value;
+        const statusEl    = document.getElementById("addStaffStatus");
+        const btn         = document.getElementById("addStaffBtn");
+
+        if (!email || !password || !displayName) {
+          statusEl.className = "settings-status err";
+          statusEl.textContent = "請填寫所有欄位";
+          return;
+        }
+        if (password.length < 6) {
+          statusEl.className = "settings-status err";
+          statusEl.textContent = "密碼至少 6 個字元";
+          return;
+        }
+
+        btn.disabled = true;
+        statusEl.className = "settings-status";
+        statusEl.textContent = "建立中…";
+
+        // 用第二個 App 實例建立帳號，不影響 owner 目前的 session
+        const secondaryApp = firebase.initializeApp(firebaseConfig, "staff_create_" + Date.now());
+        const secondaryAuth = secondaryApp.auth();
+
+        try {
+          const { user } = await secondaryAuth.createUserWithEmailAndPassword(email, password);
+          const uid = user.uid;
+          const storeId = getStoreId();
+          const data = {
+            storeId, role, displayName, email,
+            active:    true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          };
+          const batch = db.batch();
+          batch.set(db.collection("users").doc(uid), data);
+          batch.set(storeDoc().collection("members").doc(uid), data);
+          await batch.commit();
+
+          document.getElementById("newStaffEmail").value    = "";
+          document.getElementById("newStaffPassword").value = "";
+          document.getElementById("newStaffName").value     = "";
+          statusEl.className = "settings-status";
+          statusEl.textContent = "✓ 帳號建立成功";
+          loadStaffList();
+        } catch (err) {
+          statusEl.className = "settings-status err";
+          const msgs = {
+            "auth/email-already-in-use": "此 Email 已被使用",
+            "auth/invalid-email":        "Email 格式錯誤",
+            "auth/weak-password":        "密碼強度不足",
+          };
+          statusEl.textContent = msgs[err.code] || ("建立失敗：" + err.message);
+        } finally {
+          await secondaryApp.delete();
+          btn.disabled = false;
+        }
+      }
+
+      async function changeStaffRole(uid, currentRole) {
+        const newRole = currentRole === "staff" ? "manager" : "staff";
+        if (!confirm(`將角色從 ${currentRole} 改為 ${newRole}？`)) return;
+        try {
+          const batch = db.batch();
+          batch.update(db.collection("users").doc(uid), { role: newRole });
+          batch.update(storeDoc().collection("members").doc(uid), { role: newRole });
+          await batch.commit();
+          loadStaffList();
+        } catch (err) {
+          alert("更新角色失敗：" + err.message);
+        }
+      }
+
+      async function toggleStaffActive(uid, currentlyActive) {
+        const action = currentlyActive ? "停用" : "啟用";
+        if (!confirm(`確定要${action}此帳號？`)) return;
+        const newActive = !currentlyActive;
+        try {
+          const batch = db.batch();
+          batch.update(db.collection("users").doc(uid), { active: newActive });
+          batch.update(storeDoc().collection("members").doc(uid), { active: newActive });
+          await batch.commit();
+          loadStaffList();
+        } catch (err) {
+          alert(`${action}失敗：` + err.message);
+        }
+      }
+
+      // ── Health Check Tab ──
+      function healthNavTo(tab) {
+        document.querySelector('.tab-btn[data-tab="' + tab + '"]').click();
+      }
+
+      async function runHealthCheck() {
+        const listEl    = document.getElementById("healthList");
+        const summaryEl = document.getElementById("healthSummary");
+        listEl.innerHTML    = "<p class=\"staff-empty\">檢查中…</p>";
+        summaryEl.className = "health-summary";
+        summaryEl.textContent = "檢查中…";
+
+        const results = []; // { section, label, status, msg }
+
+        // ── 店家設定 ──
+        const S_STORE = "店家設定";
+        let sd = null;
+        try { const sn = await storeDoc().get(); sd = sn.exists ? sn.data() : null; } catch (_) {}
+        results.push({ section: S_STORE, label: "店名",     status: sd?.storeName ? "pass" : "error", msg: sd?.storeName || "storeName 未設定" });
+        results.push({ section: S_STORE, label: "電話",     status: sd?.phone     ? "pass" : "warn",  msg: sd?.phone     || "未設定" });
+        results.push({ section: S_STORE, label: "營業時間", status: sd?.hours     ? "pass" : "warn",  msg: sd?.hours     || "未設定" });
+        results.push({ section: S_STORE, label: "Logo",     status: sd?.logo      ? "pass" : "warn",
+          msg:    sd?.logo ? "已設定" : "尚未設定 Logo，前台會使用預設 Logo",
+          hint:   sd?.logo ? "" : "前往「店家設定」貼上 Logo 圖片網址",
+          navTab: sd?.logo ? "" : "storeSettings" });
+        const themeOk = sd?.theme?.primary && sd?.theme?.accent;
+        results.push({ section: S_STORE, label: "主題色彩", status: themeOk ? "pass" : "warn",
+          msg: themeOk ? (sd.theme.primary + " / " + sd.theme.accent) : "主題色彩未完整設定" });
+
+        // ── 菜單 ──
+        const S_MENU = "菜單";
+        let items = [];
+        try { const sn = await menuCollection().get(); items = sn.docs.map(d => d.data()); } catch (_) {}
+        results.push({ section: S_MENU, label: "有品項",       status: items.length > 0      ? "pass" : "error", msg: items.length > 0      ? ("共 " + items.length + " 項")                           : "菜單無品項" });
+        const avail = items.filter(i => i.available !== false);
+        results.push({ section: S_MENU, label: "有可供應品項", status: avail.length > 0      ? "pass" : "error", msg: avail.length > 0      ? (avail.length + " 項供應中")                             : "所有品項均已下架" });
+        const catOk = items.length > 0 && items.every(i => i.category);
+        results.push({ section: S_MENU, label: "分類完整",     status: catOk                 ? "pass" : "warn",  msg: catOk                 ? "所有品項都有分類"                                       : "有品項缺少 category" });
+        const sortOk = items.length > 0 && items.every(i => i.sortOrder != null);
+        results.push({ section: S_MENU, label: "排序已設定",   status: sortOk                ? "pass" : "warn",  msg: sortOk                ? "所有品項都有 sortOrder"                                  : "有品項缺少 sortOrder（執行「排序」功能可修正）" });
+
+        // ── 帳號 ──
+        const S_ACCT = "帳號";
+        let members = [];
+        try { const sn = await storeDoc().collection("members").get(); members = sn.docs.map(d => d.data()); } catch (_) {}
+        results.push({ section: S_ACCT, label: "Owner 帳號",  status: "pass", msg: "目前登入帳號即為 owner" });
+        const staffCount = members.filter(m => m.role === "staff" || m.role === "manager").length;
+        results.push({ section: S_ACCT, label: "有工作人員",  status: staffCount > 0 ? "pass" : "warn",
+          msg:    staffCount > 0 ? (staffCount + " 個 staff/manager") : "尚未建立員工帳號；若目前只有老闆操作可忽略",
+          hint:   staffCount > 0 ? "" : "前往「員工帳號」新增 staff 或 manager",
+          navTab: staffCount > 0 ? "" : "staffAccounts" });
+
+        // ── QR Code / PWA ──
+        const S_PWA = "QR Code / PWA";
+        const baseUrl = (typeof APP_CONFIG !== "undefined" && APP_CONFIG.baseUrl) ? APP_CONFIG.baseUrl : "";
+        results.push({ section: S_PWA, label: "baseUrl 設定", status: baseUrl ? "pass" : "error", msg: baseUrl || "APP_CONFIG.baseUrl 未設定" });
+        const orderUrl = baseUrl ? (baseUrl.replace(/\/$/, "") + "/?store=" + getStoreId()) : "";
+        results.push({ section: S_PWA, label: "點餐網址",
+          status: orderUrl ? "pass" : "error", msg: orderUrl || "無法組成，baseUrl 未設定" });
+
+        const fetchOk = async (url, label) => {
+          try {
+            const r = await fetch(url, { cache: "no-cache" });
+            return { section: S_PWA, label, status: r.ok ? "pass" : "warn", msg: r.ok ? ("HTTP " + r.status) : ("HTTP " + r.status + "，請確認部署") };
+          } catch (_) {
+            return { section: S_PWA, label, status: "warn", msg: "無法 fetch（可能離線）" };
+          }
+        };
+        const [mfResult, swResult] = await Promise.all([
+          fetchOk("/manifest.webmanifest", "manifest.webmanifest"),
+          fetchOk("/sw.js", "sw.js"),
+        ]);
+        results.push(mfResult, swResult);
+
+        // ── Render ──
+        const hasError = results.some(r => r.status === "error");
+        const hasWarn  = results.some(r => r.status === "warn");
+        summaryEl.className = "health-summary " + (hasError ? "has-error" : hasWarn ? "has-warn" : "all-pass");
+        summaryEl.textContent = hasError ? "❌  有錯誤需要處理" : hasWarn ? "⚠️  有警告，建議確認" : "✅  所有項目通過";
+
+        let prevSection = "";
+        listEl.innerHTML = results.map(r => {
+          let h = "";
+          if (r.section !== prevSection) {
+            prevSection = r.section;
+            h += "<p class=\"health-section-title\">" + r.section + "</p>";
+          }
+          const icon       = r.status === "pass" ? "✅" : r.status === "warn" ? "⚠️" : "❌";
+          const navAttr    = r.navTab ? " class=\"health-label health-nav\" onclick=\"healthNavTo('" + r.navTab + "')\"" : " class=\"health-label\"";
+          const hintHtml   = r.hint   ? "<div class=\"health-hint\">" + r.hint + "</div>" : "";
+          h += "<div class=\"health-item\"><span class=\"health-icon\">" + icon + "</span>" +
+               "<div><div" + navAttr + ">" + r.label + "</div>" +
+               "<div class=\"health-msg\">" + r.msg + "</div>" + hintHtml + "</div></div>";
+          return h;
+        }).join("");
+      }
+
+      // ── QR Code Tab ──
+      function orderUrlFor(storeId) {
+        return APP_CONFIG.baseUrl.replace(/\/$/, "") + "/?store=" + storeId;
+      }
+
+      function renderQRCode() {
+        const storeId  = getStoreId();
+        const orderUrl = orderUrlFor(storeId);
+        const name     = document.getElementById("adminBrandName").textContent || storeId;
+        document.getElementById("qrTabName").textContent = name;
+        document.getElementById("qrTabUrl").textContent  = orderUrl;
+        document.getElementById("qrTabImg").src =
+          "https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=0&data=" +
+          encodeURIComponent(orderUrl);
+      }
+
+      function printQRCode() {
+        const storeId  = getStoreId();
+        const orderUrl = orderUrlFor(storeId);
+        const name     = document.getElementById("qrTabName").textContent;
+        const qrSrc    = "https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=0&data=" +
+                         encodeURIComponent(orderUrl);
+        const w = window.open("", "_blank");
+        w.document.write(
+          "<!doctype html><html><head><meta charset=\"UTF-8\"><title>" + name + " QR Code</title>" +
+          "<style>body{margin:0;padding:40px;font-family:sans-serif;text-align:center}" +
+          "h1{font-size:1.4rem;margin-bottom:6px}p{color:#aaa;font-size:0.75rem;margin-bottom:20px}" +
+          "img{width:280px;height:280px}@media print{body{padding:20px}}</style></head><body>" +
+          "<h1>" + name + "</h1><p>" + orderUrl + "</p>" +
+          "<img src=\"" + qrSrc + "\" />" +
+          "<script>window.onload=function(){window.print();}<\/script>" +
+          "</body></html>"
+        );
+        w.document.close();
+      }
     </script>
+    <script src="pwa.js"></script>
   </body>
 </html>

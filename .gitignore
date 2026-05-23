@@ -1,3 +1,8 @@
 .DS_Store
 *.command
 .claude/
+node_modules/
+.firebase/
+*firebase-adminsdk*.json
+service-account*.json
+.env

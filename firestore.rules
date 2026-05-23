@@ -2,102 +2,139 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Helper functions ──────────────────────────────────────────────────
-
     function isAuth() {
       return request.auth != null;
     }
 
-    // 讀取登入者的 users/{uid} profile（每次規則評估計一次 read）
     function profile() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
-    // 登入者的 storeId 必須與路徑中的 storeId 相同
+    // active 欄位不存在（舊帳號）視為啟用；只有明確 false 才封鎖
+    function isActiveUser() {
+      return isAuth() &&
+          (!profile().keys().hasAny(["active"]) || profile().active != false);
+    }
+
     function isSameStore(storeId) {
-      return isAuth() && profile().storeId == storeId;
+      return isActiveUser() && profile().storeId == storeId;
     }
 
-    // 任何合法店家員工（staff / manager / owner）
     function isStaff(storeId) {
-      return isSameStore(storeId) && (profile().role in ["staff", "manager", "owner"]);
+      return isSameStore(storeId) &&
+          (profile().role == "staff" ||
+           profile().role == "manager" ||
+           profile().role == "owner");
     }
 
-    // manager 或以上
     function isManager(storeId) {
-      return isSameStore(storeId) && (profile().role in ["manager", "owner"]);
+      return isSameStore(storeId) &&
+          (profile().role == "manager" || profile().role == "owner");
     }
 
-    // owner 限定
     function isOwner(storeId) {
       return isSameStore(storeId) && profile().role == "owner";
     }
 
-    // ── 訂單新增驗證 ──────────────────────────────────────────────────────
-    // 前台允許送出的欄位白名單（phone / scheduledTime 為選填）
     function isValidNewOrder() {
-      let d    = request.resource.data;
-      let allowed = [
-        "orderNumber", "customer", "note", "service", "payment",
-        "items", "total", "status", "createdAt", "phone", "scheduledTime"
-      ];
-      return d.status == "pending"
-          && (d.service in ["內用", "外帶"])
-          && d.total is number && d.total > 0
-          && d.items is list
-          && d.items.size() > 0
-          && d.items.size() <= 50
-          && d.keys().hasOnly(allowed);
+      return request.resource.data.status == "pending" &&
+          request.resource.data.total is number &&
+          request.resource.data.total > 0 &&
+          request.resource.data.items is list &&
+          request.resource.data.items.size() > 0 &&
+          request.resource.data.items.size() <= 50 &&
+          request.resource.data.keys().hasOnly([
+            "orderNumber", "customer", "note", "service", "payment",
+            "items", "total", "status", "createdAt", "phone", "scheduledTime"
+          ]);
     }
 
-    // ── 訂單狀態更新驗證 ──────────────────────────────────────────────────
-    // 只允許 pending → done，且只能異動 status 與 doneAt 兩個欄位
     function isValidStatusUpdate() {
-      let before = resource.data;
-      let after  = request.resource.data;
-      return before.status == "pending"
-          && after.status  == "done"
-          // 異動的欄位集合只能是 status、doneAt
-          && after.diff(before).affectedKeys().hasOnly(["status", "doneAt"]);
+      return resource.data.status == "pending" &&
+          request.resource.data.status == "done" &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "doneAt"]);
     }
 
-    // ── users/{uid} ──────────────────────────────────────────────────────
     match /users/{uid} {
-      allow read:  if request.auth.uid == uid;
-      allow write: if false;
+      // 停用帳號仍需能讀自己的 profile（前端才能拿到 active:false 並登出）
+      allow read: if request.auth.uid == uid;
+
+      // 啟用中的 owner 可為同店建立 staff / manager 帳號
+      allow create: if isOwner(request.resource.data.storeId) &&
+          (request.resource.data.role == "staff" ||
+           request.resource.data.role == "manager") &&
+          request.resource.data.active == true &&
+          request.resource.data.keys().hasOnly(
+            ["storeId", "role", "displayName", "email", "active", "createdAt"]
+          );
+
+      // 啟用中的 owner 可修改同店 staff / manager 的 role 與 active
+      allow update: if isOwner(resource.data.storeId) &&
+          request.auth.uid != uid &&
+          (resource.data.role == "staff" || resource.data.role == "manager") &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(["role", "active"]) &&
+          (request.resource.data.role == "staff" ||
+           request.resource.data.role == "manager");
+
+      allow delete: if false;
     }
 
-    // ── stores/{storeId} （店家設定文件）────────────────────────────────
+    match /stores/{storeId}/members/{uid} {
+      allow read: if isStaff(storeId);
+
+      // owner 建立成員：storeId 鎖路徑、role 只 staff/manager、active 是 bool、keys 白名單
+      allow create: if isOwner(storeId) &&
+          request.resource.data.storeId == storeId &&
+          (request.resource.data.role == "staff" ||
+           request.resource.data.role == "manager") &&
+          request.resource.data.active is bool &&
+          request.resource.data.keys().hasOnly(
+            ["storeId", "role", "displayName", "email", "active", "createdAt"]
+          );
+
+      // owner 只能改 role / active；前後 storeId 鎖路徑；前後 role 只 staff/manager
+      allow update: if isOwner(storeId) &&
+          resource.data.storeId == storeId &&
+          request.resource.data.storeId == storeId &&
+          (resource.data.role == "staff" || resource.data.role == "manager") &&
+          (request.resource.data.role == "staff" ||
+           request.resource.data.role == "manager") &&
+          request.resource.data.active is bool &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(["role", "active"]);
+
+      allow delete: if isOwner(storeId);
+    }
+
     match /stores/{storeId} {
-      allow read:  if isStaff(storeId);
+      allow get:   if true;
+      allow list:  if false;
       allow write: if isOwner(storeId);
     }
 
-    // ── stores/{storeId}/menu ─────────────────────────────────────────────
+    match /stores/{storeId}/private/{doc} {
+      allow read:  if isOwner(storeId);
+      allow write: if isOwner(storeId);
+    }
+
     match /stores/{storeId}/menu/{itemId} {
       allow read:  if true;
       allow write: if isOwner(storeId);
     }
 
-    // ── stores/{storeId}/orders ───────────────────────────────────────────
     match /stores/{storeId}/orders/{orderId} {
-      // 未登入客人可新增訂單（通過格式驗證）
       allow create: if isValidNewOrder();
-
-      // staff：只能讀 pending 訂單（即時收單用）
-      //   - get：單筆讀取，直接檢查 resource.data.status
-      //   - list：query 讀取，Firestore Rules 要求 query 本身帶 status=="pending" 過濾條件才通過
-      // manager / owner：可讀全部訂單（查歷史、統計）
-      allow get:  if isManager(storeId)
-                  || (isStaff(storeId) && resource.data.status == "pending");
-      allow list: if isManager(storeId)
-                  || (isStaff(storeId) && resource.data.status == "pending");
-
-      // pending → done，且只能改 status / doneAt
+      allow read:   if isManager(storeId);
       allow update: if isManager(storeId) && isValidStatusUpdate();
-
-      // 刪除只有 owner
       allow delete: if isOwner(storeId);
+    }
+
+    match /stores/{storeId}/pendingOrders/{orderId} {
+      allow create: if isValidNewOrder();
+      allow read:   if isStaff(storeId);
+      allow update: if false;
+      allow delete: if isManager(storeId);
     }
   }
 }

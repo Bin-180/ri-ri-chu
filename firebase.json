@@ -5,15 +5,37 @@
   },
   "hosting": {
     "public": ".",
+    "headers": [
+      {
+        "source": "/sw.js",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }]
+      },
+      {
+        "source": "/manifest.webmanifest",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      }
+    ],
     "ignore": [
       "firebase.json",
       "firestore.rules",
       "firestore.indexes.json",
+      "storage.rules",
       ".firebaserc",
       ".gitignore",
       "README.md",
       ".git/**",
-      "*.command"
+      ".claude/**",
+      "node_modules/**",
+      "scripts/**",
+      "package.json",
+      "package-lock.json",
+      "setup-test-users.js",
+      "*firebase-adminsdk*.json",
+      "*.command",
+      "docs/NEW_STORE_SETUP.md",
+      "docs/DEPLOYMENT.md",
+      "CHANGELOG.md",
+      "RELEASE_CHECKLIST.md"
     ]
   }
 }
