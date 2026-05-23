@@ -159,6 +159,49 @@
         font-size: 0.8rem;
       }
 
+      /* ── Docs dropdown ── */
+      .docs-menu { position: relative; }
+
+      #docsBtn {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.7);
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      #docsBtn:hover { background: rgba(255,255,255,0.08); }
+
+      .docs-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: calc(100% + 6px);
+        background: #fff;
+        border: 1px solid #dde1e8;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+        min-width: 220px;
+        z-index: 200;
+        padding: 6px 0;
+      }
+
+      .docs-dropdown.open { display: block; }
+
+      .docs-dropdown a {
+        display: block;
+        padding: 9px 16px;
+        font-size: 0.83rem;
+        color: #1a2535;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .docs-dropdown a:hover { background: #f4f6fa; }
+
       /* ── Tabs ── */
       .tab-bar {
         background: #fff;
@@ -1253,7 +1296,16 @@
         </div>
         <div class="header-right">
           <span id="adminEmail"></span>
-          <a href="/docs.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.7);font-size:0.8rem;text-decoration:none;padding:5px 10px;border:1px solid rgba(255,255,255,0.2);border-radius:4px;white-space:nowrap;">文件</a>
+          <div class="docs-menu">
+            <button id="docsBtn">文件 ▾</button>
+            <div class="docs-dropdown" id="docsDropdown">
+              <a href="/docs/OWNER_GUIDE.md" target="_blank" rel="noopener">老闆操作手冊</a>
+              <a href="/docs/STAFF_GUIDE.md" target="_blank" rel="noopener">員工操作手冊</a>
+              <a href="/docs/BACKUP_SOP.md" target="_blank" rel="noopener">備份匯出 SOP</a>
+              <a href="/docs/STORE_TRIAL_CHECKLIST.md" target="_blank" rel="noopener">正式營運實測清單</a>
+              <a href="/legal.html?store=ririchu" target="_blank" rel="noopener">法律頁面</a>
+            </div>
+          </div>
           <button id="logoutBtn">登出</button>
         </div>
       </header>
@@ -1618,6 +1670,18 @@
         if (unsubscribe) unsubscribe();
         auth.signOut();
       });
+
+      (function () {
+        const btn      = document.getElementById("docsBtn");
+        const dropdown = document.getElementById("docsDropdown");
+        btn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          dropdown.classList.toggle("open");
+        });
+        document.addEventListener("click", function () {
+          dropdown.classList.remove("open");
+        });
+      })();
 
       function showLogin(errorMsg) {
         if (errorMsg) document.getElementById("loginError").textContent = errorMsg;

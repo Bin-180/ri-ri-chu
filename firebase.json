@@ -37,7 +37,8 @@
       "CHANGELOG.md",
       "RELEASE_CHECKLIST.md",
       "ROADMAP.md",
-      "docs/LEGAL_DRAFTS.md"
+      "docs/LEGAL_DRAFTS.md",
+      "docs.html"
     ]
   }
 }
