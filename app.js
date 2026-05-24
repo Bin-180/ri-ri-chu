@@ -639,7 +639,17 @@ function applyStoreConfig() {
   const c = STORE_CONFIG;
   document.title = `${c.storeName} 點餐`;
   const logo = document.getElementById("brandLogo");
-  if (logo) { logo.src = c.logo; logo.alt = c.storeName; }
+  if (logo) {
+    if (c.logo) {
+      logo.src = c.logo;
+      logo.alt = c.storeName;
+      logo.style.display = "";
+    } else {
+      logo.removeAttribute("src");
+      logo.alt = "";
+      logo.style.display = "none";
+    }
+  }
   const name = document.getElementById("brandName");
   if (name) name.textContent = c.storeName;
   const sub = document.getElementById("brandSubtitle");
