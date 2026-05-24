@@ -1272,7 +1272,6 @@
     <!-- ── Login screen ── -->
     <div id="loginScreen" class="login-screen">
       <div class="login-card">
-        <img src="" class="login-logo" id="loginLogo" alt="" />
         <h1 id="loginTitle"></h1>
         <p>請輸入員工帳號登入</p>
         <div id="loginError" class="login-error"></div>
@@ -1550,10 +1549,8 @@
       (function applyStoreConfig() {
         const c = STORE_CONFIG;
         const adminTitle = c.storeName + " 後台";
-        document.title = adminTitle;
-        document.getElementById("loginLogo").src   = c.logo;
-        document.getElementById("loginLogo").alt   = adminTitle;
-        document.getElementById("loginTitle").textContent      = adminTitle;
+        document.title = "小彬後台";
+        document.getElementById("loginTitle").textContent      = "小彬後台";
         document.getElementById("adminLogo").src   = c.logo;
         document.getElementById("adminBrandName").textContent  = adminTitle;
       })();
