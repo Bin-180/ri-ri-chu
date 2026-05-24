@@ -1,8 +1,8 @@
-// Service Worker — 小彬點餐系統
+// Service Worker — BinOrder
 // 策略：HTML network-first，靜態資源 stale-while-revalidate
 // 絕對不快取 Firestore / Auth / QR Code API 請求
 
-const CACHE = 'xiaobin-v2';
+const CACHE = 'binorder-v3';
 
 const PRECACHE = [
   '/',

@@ -1,6 +1,6 @@
 {
-  "name": "小彬點餐系統",
-  "short_name": "小彬點餐",
+  "name": "BinOrder",
+  "short_name": "BinOrder",
   "description": "線上點餐系統",
   "start_url": "/?store=ririchu",
   "scope": "/",
