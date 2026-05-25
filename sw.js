@@ -2,7 +2,7 @@
 // 策略：HTML network-first，靜態資源 stale-while-revalidate
 // 絕對不快取 Firestore / Auth / QR Code API 請求
 
-const CACHE = 'binorder-v4';
+const CACHE = 'binorder-v5';
 
 const PRECACHE = [
   '/',
@@ -19,9 +19,12 @@ const PRECACHE = [
   '/menu-data.js',
   '/pwa.js',
   '/manifest.webmanifest',
+  '/admin.webmanifest',
   '/logo.jpg',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
+  '/icons/binorder-192.png',
+  '/icons/binorder-512.png',
 ];
 
 // 這些 URL pattern 完全不走 SW，讓瀏覽器直接處理
