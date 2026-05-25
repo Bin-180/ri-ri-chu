@@ -2,7 +2,7 @@
 // 策略：HTML network-first，靜態資源 stale-while-revalidate
 // 絕對不快取 Firestore / Auth / QR Code API 請求
 
-const CACHE = 'binorder-v3';
+const CACHE = 'binorder-v4';
 
 const PRECACHE = [
   '/',

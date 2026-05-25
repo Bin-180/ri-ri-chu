@@ -2,7 +2,7 @@
   "name": "BinOrder",
   "short_name": "BinOrder",
   "description": "線上點餐系統",
-  "start_url": "/?store=ririchu",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",

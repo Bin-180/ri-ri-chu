@@ -43,15 +43,6 @@
         box-shadow: 0 4px 24px rgba(0,0,0,0.10);
       }
 
-      .login-logo {
-        width: 72px;
-        height: 72px;
-        border-radius: 50%;
-        object-fit: cover;
-        display: block;
-        margin: 0 auto 16px;
-        border: 2px solid #e8e8e8;
-      }
 
       .login-card h1 {
         text-align: center;
@@ -1290,7 +1281,7 @@
 
       <header class="admin-header">
         <div class="admin-brand">
-          <img src="" class="admin-logo" id="adminLogo" alt="" />
+          <img src="" class="admin-logo" id="adminLogo" alt="" style="display:none" />
           <span id="adminBrandName"></span>
         </div>
         <div class="header-right">
@@ -1546,14 +1537,10 @@
     <script src="menu-data.js"></script>
     <script>
       // ── Store config ──
+      // 登入前只固定 BinOrder；adminBrandName / adminLogo 由登入後讀 Firestore 再設
       (function applyStoreConfig() {
-        const c = STORE_CONFIG;
-        const adminTitle = c.storeName + " 後台";
         document.title = "BinOrder";
-        document.getElementById("loginTitle").textContent      = "BinOrder";
-        const _logoEl = document.getElementById("adminLogo");
-        if (c.logo) { _logoEl.src = c.logo; } else { _logoEl.style.display = "none"; }
-        document.getElementById("adminBrandName").textContent  = adminTitle;
+        document.getElementById("loginTitle").textContent = "BinOrder";
       })();
 
       // ── Tab switching ──
