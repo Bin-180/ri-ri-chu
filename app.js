@@ -57,8 +57,28 @@ const variantItemPhotoEl = document.querySelector("#variantItemPhoto");
 const variantItemPriceEl = document.querySelector("#variantItemPrice");
 const variantConfirmEl   = document.querySelector("#variantConfirm");
 
-let pendingItem       = null;
-let pendingSelections = [];
+let pendingItem         = null;
+let pendingSelections   = [];
+let pendingQty          = 1;
+let pendingVariantLabel = null;
+let pendingVariantPrice = null;
+
+const qtyMinusEl   = document.getElementById("qtyMinus");
+const qtyPlusEl    = document.getElementById("qtyPlus");
+const qtyDisplayEl = document.getElementById("qtyDisplay");
+
+function updateQtyDisplay() {
+  qtyDisplayEl.textContent = pendingQty;
+  qtyMinusEl.disabled = pendingQty <= 1;
+  qtyPlusEl.disabled  = pendingQty >= 20;
+}
+
+qtyMinusEl.addEventListener("click", () => {
+  if (pendingQty > 1) { pendingQty--; updateQtyDisplay(); }
+});
+qtyPlusEl.addEventListener("click", () => {
+  if (pendingQty < 20) { pendingQty++; updateQtyDisplay(); }
+});
 
 function formatPrice(v) {
   return currency.format(v);
@@ -139,7 +159,11 @@ function renderVariantPicker() {
           </button>`).join("")
       }</div>`;
     }
-    variantConfirmEl.classList.add("hidden");
+    pendingVariantLabel = null;
+    pendingVariantPrice = null;
+    variantConfirmEl.textContent = "確認加入";
+    variantConfirmEl.classList.remove("hidden");
+    variantConfirmEl.disabled = true;
   } else {
     showTopPhoto();
     variantItemPriceEl.textContent = formatPrice(pendingItem.price);
@@ -151,16 +175,23 @@ function renderVariantPicker() {
 }
 
 function showVariantPicker(item) {
-  pendingItem       = item;
-  pendingSelections = [];
+  pendingItem         = item;
+  pendingSelections   = [];
+  pendingQty          = 1;
+  pendingVariantLabel = null;
+  pendingVariantPrice = null;
   renderVariantPicker();
+  updateQtyDisplay();
   variantPickerEl.classList.add("open");
   variantOverlayEl.classList.add("visible");
 }
 
 function hideVariantPicker() {
-  pendingItem       = null;
-  pendingSelections = [];
+  pendingItem         = null;
+  pendingSelections   = [];
+  pendingQty          = 1;
+  pendingVariantLabel = null;
+  pendingVariantPrice = null;
   variantPickerEl.classList.remove("open");
   variantOverlayEl.classList.remove("visible");
   variantConfirmEl.classList.add("hidden");
@@ -275,13 +306,13 @@ function cartKey(id, variantLabel) {
   return variantLabel ? `${id}:${variantLabel}` : id;
 }
 
-function addToCart(id, variantLabel, price) {
+function addToCart(id, variantLabel, price, qty = 1) {
   const key = cartKey(id, variantLabel);
   const existing = state.cart.get(key);
   if (existing) {
-    state.cart.set(key, { ...existing, quantity: existing.quantity + 1 });
+    state.cart.set(key, { ...existing, quantity: existing.quantity + qty });
   } else {
-    state.cart.set(key, { quantity: 1, variantLabel, price });
+    state.cart.set(key, { quantity: qty, variantLabel, price });
   }
   renderCart();
 }
@@ -583,8 +614,11 @@ variantOptionsEl.addEventListener("click", (e) => {
     };
     variantConfirmEl.disabled = pendingSelections.some((s) => s === null);
   } else {
-    addToCart(pendingItem.id, btn.dataset.label, Number(btn.dataset.price));
-    hideVariantPicker();
+    variantOptionsEl.querySelectorAll(".variant-btn").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    pendingVariantLabel = btn.dataset.label;
+    pendingVariantPrice = Number(btn.dataset.price);
+    variantConfirmEl.disabled = false;
   }
 });
 
@@ -594,9 +628,12 @@ variantConfirmEl.addEventListener("click", () => {
     if (pendingSelections.some((s) => s === null)) return;
     const combinedLabel = pendingSelections.map((s) => s.label).join("・");
     const finalPrice    = pendingSelections.find((s) => s.price !== null)?.price ?? pendingItem.price;
-    addToCart(pendingItem.id, combinedLabel, finalPrice);
+    addToCart(pendingItem.id, combinedLabel, finalPrice, pendingQty);
+  } else if (pendingItem.variants && pendingItem.variants.length > 0) {
+    if (pendingVariantLabel === null) return;
+    addToCart(pendingItem.id, pendingVariantLabel, pendingVariantPrice, pendingQty);
   } else {
-    addToCart(pendingItem.id, null, pendingItem.price);
+    addToCart(pendingItem.id, null, pendingItem.price, pendingQty);
   }
   hideVariantPicker();
 });

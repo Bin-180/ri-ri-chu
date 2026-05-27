@@ -793,6 +793,38 @@ input::placeholder, textarea::placeholder {
   background: var(--board-3);
 }
 
+.qty-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 16px 0 12px;
+}
+
+.qty-stepper-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--chalk-2);
+  background: var(--board-3);
+  color: var(--chalk);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s, opacity 0.15s;
+}
+
+.qty-stepper-btn:disabled { opacity: 0.3; cursor: default; }
+.qty-stepper-btn:not(:disabled):active { border-color: var(--chalk); }
+
+.qty-stepper-num {
+  min-width: 32px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--chalk);
+}
+
 .variant-confirm {
   display: block;
   width: 100%;
